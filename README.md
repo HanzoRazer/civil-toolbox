@@ -3,32 +3,54 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-A comprehensive civil engineering toolkit for solving **overland drainage flow problems**. This toolbox provides industry-standard computational methods for stormwater management, hydraulic analysis, and drainage design.
+## Drainage Analysis & Infrastructure Planning Workstation
+
+Civil Toolbox is evolving from a collection of hydrologic calculators into a **project-centered workstation** for drainage analysis, stormwater infrastructure design, and infrastructure planning.
+
+The platform is intended to support the complete engineering workflow:
+
+- Site drainage evaluation
+- Watershed characterization
+- Hydrologic and hydraulic analysis
+- Stormwater infrastructure sizing
+- Scenario comparison
+- Design documentation
+- Engineering report generation
 
 ---
 
-## Table of Contents
+## Vision
 
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Methods & Calculations](#methods--calculations)
-  - [Rational Method](#rational-method)
-  - [TR-55 Method](#tr-55-method)
-  - [Kinematic Wave (Sheet Flow)](#kinematic-wave-sheet-flow)
-  - [Time of Concentration (Tc)](#time-of-concentration-tc)
-- [Usage Examples](#usage-examples)
-- [API Reference](#api-reference)
-- [Contributing](#contributing)
-- [License](#license)
+Civil Toolbox aims to become a modern civil engineering workstation that combines:
+
+- Hydrologic calculators
+- Infrastructure modeling
+- GIS-linked workflows
+- Scenario planning
+- Engineering documentation
+- Project management
+
+The long-term goal is to provide engineers, designers, municipalities, and developers with a unified environment for stormwater and drainage planning.
 
 ---
 
-## Overview
+## Core Philosophy
 
-Civil Toolbox addresses the core calculations required for overland drainage flow analysis. Whether you're designing stormwater management systems, conducting flood risk assessments, or sizing drainage infrastructure, this toolkit provides reliable implementations of proven hydrological methods.
+### From Calculators to Workflows
 
-### Who Is This For?
+Traditional engineering calculators are isolated and disposable. Civil Toolbox is being designed so that:
+
+- Calculations belong to **projects**
+- Projects contain **drainage systems**
+- Systems contain **infrastructure**
+- Infrastructure participates in **scenarios**
+- Scenarios produce **reports and decisions**
+
+This architecture allows engineers to preserve assumptions, compare alternatives, and maintain traceability throughout the design process.
+
+---
+
+## Who Is This For?
 
 - **Civil Engineers** designing drainage systems and stormwater infrastructure
 - **Hydrologists** performing watershed analysis and runoff calculations
@@ -38,7 +60,7 @@ Civil Toolbox addresses the core calculations required for overland drainage flo
 
 ---
 
-## Features
+## Current Capabilities
 
 | Method | Description | Use Case |
 |--------|-------------|----------|
@@ -58,7 +80,10 @@ Civil Toolbox addresses the core calculations required for overland drainage flo
 ```bash
 git clone https://github.com/HanzoRazer/civil-toolbox.git
 cd civil-toolbox
-pip install -r requirements.txt
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# or: source .venv/bin/activate  # Unix
+pip install -e ".[dev]"
 ```
 
 ### Quick Start
@@ -111,7 +136,7 @@ Q = C × i × A
 
 ### TR-55 Method
 
-Technical Release 55 (TR-55) is an NRCS (Natural Resources Conservation Service) methodology for estimating runoff from urban and developing watersheds. It uses the Curve Number (CN) method to estimate runoff volume.
+Technical Release 55 (TR-55) is an NRCS methodology for estimating runoff from urban and developing watersheds using the Curve Number (CN) method.
 
 **Runoff Equation:**
 ```
@@ -132,9 +157,8 @@ Where:
 
 **Common Curve Numbers:**
 
-| Cover Description | Hydrologic Soil Group |
-|-------------------|---------------------|
-| | A | B | C | D |
+| Cover Description | A | B | C | D |
+|-------------------|---|---|---|---|
 | Impervious surfaces | 98 | 98 | 98 | 98 |
 | Open space (good condition) | 39 | 61 | 74 | 80 |
 | Residential (1/4 acre) | 54 | 70 | 80 | 85 |
@@ -143,40 +167,9 @@ Where:
 
 ---
 
-### Kinematic Wave (Sheet Flow)
-
-The Kinematic Wave equation calculates travel time for sheet flow, which is the thin layer of water flowing over land surfaces during the initial phase of runoff.
-
-**Formula:**
-```
-Tt = (0.007 × (n × L)^0.8) / (P2^0.5 × S^0.4)
-```
-
-| Parameter | Description | Units |
-|-----------|-------------|-------|
-| Tt | Travel time | hours |
-| n | Manning's roughness coefficient | dimensionless |
-| L | Flow length | feet (max 100 ft) |
-| P2 | 2-year, 24-hour rainfall | inches |
-| S | Slope | ft/ft |
-
-**Manning's n for Sheet Flow:**
-
-| Surface | n Value |
-|---------|---------|
-| Smooth asphalt | 0.011 |
-| Smooth concrete | 0.012 |
-| Fallow (no residue) | 0.05 |
-| Short grass prairie | 0.15 |
-| Dense grass | 0.24 |
-| Woods (light underbrush) | 0.40 |
-| Woods (dense underbrush) | 0.80 |
-
----
-
 ### Time of Concentration (Tc)
 
-Time of Concentration is the time required for runoff to travel from the hydraulically most distant point in the watershed to the outlet. Civil Toolbox provides three methods:
+Time of Concentration is the time required for runoff to travel from the hydraulically most distant point in the watershed to the outlet.
 
 #### Kirpich Formula
 
@@ -186,12 +179,6 @@ Best for rural and agricultural watersheds with well-defined channels.
 Tc = 0.0078 × L^0.77 × S^(-0.385)
 ```
 
-| Parameter | Description | Units |
-|-----------|-------------|-------|
-| Tc | Time of concentration | minutes |
-| L | Channel length | feet |
-| S | Average watershed slope | ft/ft |
-
 #### Kerby Equation
 
 Designed for overland sheet flow on small watersheds (< 10 acres).
@@ -199,22 +186,6 @@ Designed for overland sheet flow on small watersheds (< 10 acres).
 ```
 Tc = 0.83 × (L × n)^0.467 × S^(-0.235)
 ```
-
-| Parameter | Description | Units |
-|-----------|-------------|-------|
-| Tc | Time of concentration | minutes |
-| L | Flow length | feet |
-| n | Retardance coefficient | dimensionless |
-| S | Slope | ft/ft |
-
-**Kerby Retardance Coefficients:**
-
-| Surface | n |
-|---------|---|
-| Smooth pavement | 0.02 |
-| Poor grass/cultivated | 0.30 |
-| Average grass | 0.40 |
-| Dense grass | 0.80 |
 
 #### NRCS Lag Method
 
@@ -226,20 +197,21 @@ Tc = L / 0.6
 Where L (Lag) = (l^0.8 × (S + 1)^0.7) / (1900 × Y^0.5)
 ```
 
-| Parameter | Description | Units |
-|-----------|-------------|-------|
-| L | Lag time | hours |
-| l | Hydraulic length | feet |
-| S | (1000/CN) - 10 | inches |
-| Y | Average watershed slope | percent |
+---
+
+### Kinematic Wave (Sheet Flow)
+
+Calculates travel time for sheet flow over land surfaces.
+
+```
+Tt = (0.007 × (n × L)^0.8) / (P2^0.5 × S^0.4)
+```
 
 ---
 
 ## Usage Examples
 
 ### Example 1: Storm Sewer Design
-
-Calculate peak runoff for a 15-acre commercial development:
 
 ```python
 from civil_toolbox import RationalMethod, TimeOfConcentration
@@ -250,9 +222,6 @@ tc = TimeOfConcentration.kirpich(
     slope=0.02        # ft/ft
 )
 print(f"Time of Concentration: {tc:.1f} minutes")
-
-# Get rainfall intensity from IDF curve for your location
-# Assuming i = 5.2 in/hr for Tc duration
 
 # Calculate Peak Runoff
 Q = RationalMethod.calculate(
@@ -265,8 +234,6 @@ print(f"Peak Runoff: {Q:.1f} cfs")
 
 ### Example 2: TR-55 Detention Pond Sizing
 
-Estimate runoff volume for a 50-acre mixed-use development:
-
 ```python
 from civil_toolbox import TR55
 
@@ -278,108 +245,98 @@ areas = [
 ]
 
 cn_composite = TR55.composite_cn(areas)
+runoff_depth = TR55.runoff_depth(precipitation=5.0, curve_number=cn_composite)
+volume = TR55.runoff_volume(runoff_depth=runoff_depth, area_acres=50)
+
 print(f"Composite CN: {cn_composite:.0f}")
-
-# Calculate runoff depth for 5-inch storm
-runoff_depth = TR55.runoff_depth(
-    precipitation=5.0,
-    curve_number=cn_composite
-)
-print(f"Runoff Depth: {runoff_depth:.2f} inches")
-
-# Calculate runoff volume
-volume = TR55.runoff_volume(
-    runoff_depth=runoff_depth,
-    area_acres=50
-)
 print(f"Runoff Volume: {volume:,.0f} cubic feet")
 ```
 
-### Example 3: Sheet Flow Analysis
+---
 
-Calculate travel time across a parking lot:
+## Product Roadmap
 
-```python
-from civil_toolbox import KinematicWave
+### Phase 1 — Foundation
 
-tt = KinematicWave.travel_time(
-    n=0.011,          # Smooth asphalt
-    length=100,       # feet (max for sheet flow)
-    P2=3.5,           # 2-year, 24-hour rainfall (inches)
-    slope=0.01        # ft/ft
-)
-print(f"Sheet Flow Travel Time: {tt:.2f} hours ({tt*60:.1f} minutes)")
-```
+- Establish project architecture
+- Convert calculators into reusable modules
+- Implement project persistence
+- Project workspace with saved calculations
+- Rational Method workflows
+- Report export foundation
+
+### Phase 2 — Planning Workflows
+
+- Scenario comparison (existing vs proposed, with/without detention)
+- Design criteria libraries
+- Calculation audit trails
+- Review workflows
+
+### Phase 3 — Infrastructure Modeling
+
+- Pipe networks and storm sewers
+- Detention systems
+- Culvert analysis
+- Hydraulic grading
+- Infrastructure schedules
+
+### Phase 4 — Spatial Analysis
+
+- GIS integration
+- Map-based drainage area delineation
+- Terrain analysis
+- Flow path tracing
+- Spatial reporting
 
 ---
 
-## API Reference
+## Engineering Reliability
 
-### RationalMethod
+Civil Toolbox calculations are designed to:
 
-| Method | Parameters | Returns |
-|--------|------------|---------|
-| `calculate(C, i, A)` | C: coefficient, i: intensity (in/hr), A: area (acres) | Q (cfs) |
-| `get_coefficient(land_use)` | land_use: string descriptor | C value |
+- Identify governing equations
+- Cite engineering references
+- Include units explicitly
+- Define assumptions clearly
+- Support reproducibility
+- Include verification tests
 
-### TR55
-
-| Method | Parameters | Returns |
-|--------|------------|---------|
-| `runoff_depth(precipitation, curve_number)` | P (in), CN | Q (in) |
-| `runoff_volume(runoff_depth, area_acres)` | Q (in), A (acres) | Volume (cf) |
-| `composite_cn(area_cn_pairs)` | List of (area, CN) tuples | Weighted CN |
-| `get_cn(cover, soil_group)` | cover: string, soil_group: A/B/C/D | CN value |
-
-### TimeOfConcentration
-
-| Method | Parameters | Returns |
-|--------|------------|---------|
-| `kirpich(length, slope)` | L (ft), S (ft/ft) | Tc (min) |
-| `kerby(length, n, slope)` | L (ft), n, S (ft/ft) | Tc (min) |
-| `nrcs_lag(length, cn, slope)` | L (ft), CN, Y (%) | Tc (min) |
-
-### KinematicWave
-
-| Method | Parameters | Returns |
-|--------|------------|---------|
-| `travel_time(n, length, P2, slope)` | n, L (ft), P2 (in), S (ft/ft) | Tt (hr) |
-
----
-
-## Project Roadmap
-
-- [ ] Core calculation modules
-- [ ] Input validation and unit conversions
-- [ ] IDF curve integration
-- [ ] Hydrograph generation (SCS Unit Hydrograph)
-- [ ] Channel flow calculations (Manning's equation)
-- [ ] GUI/Web interface
-- [ ] Export to engineering report formats
-- [ ] Integration with GIS data
+Engineering software should never function as a black box.
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! All contributions should follow repository standards and verification requirements.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Contributors May:
+
+- Submit bug fixes
+- Propose new calculators
+- Improve documentation
+- Add engineering references
+- Contribute test cases
 
 ### Development Setup
 
 ```bash
 git clone https://github.com/HanzoRazer/civil-toolbox.git
 cd civil-toolbox
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements-dev.txt
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# or: source .venv/bin/activate  # Unix
+pip install -e ".[dev]"
 pytest
 ```
+
+### Coding Standards
+
+- Modular architecture
+- Deterministic calculations
+- Strong typing where possible
+- Unit-aware computation
+- Test-first engineering logic
+- Separation of UI and calculation logic
 
 ---
 
@@ -396,16 +353,10 @@ pytest
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## Acknowledgments
-
-- Natural Resources Conservation Service (NRCS) for TR-55 methodology
-- Federal Highway Administration (FHWA) for hydraulic engineering guidelines
-- The civil engineering community for continued development of these methods
+Future governance updates may introduce additional engineering disclaimers and professional-use guidance.
 
 ---
 
 <p align="center">
-  <b>Civil Toolbox</b> - Engineering Solutions for Drainage Design
+  <b>Civil Toolbox</b> — Drainage Analysis & Infrastructure Planning Workstation
 </p>
