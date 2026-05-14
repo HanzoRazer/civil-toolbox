@@ -318,6 +318,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 
 ### Additional Documentation
 
+- [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Verification Standards](docs/verification.md) — How calculations are validated
 - [Engineering References](docs/references.md) — Authoritative sources
 - [Testing Guide](tests/README.md) — Test organization and patterns
