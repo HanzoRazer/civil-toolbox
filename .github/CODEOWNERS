@@ -1,0 +1,18 @@
+# Civil Toolbox Code Owners
+# These users will be requested for review on PRs that modify matching paths.
+
+# Global ownership
+* @HanzoRazer
+
+# Documentation and governance
+/docs/ @HanzoRazer
+*.md @HanzoRazer
+
+# GitHub workflow files
+/.github/ @HanzoRazer
+
+# Tests
+/tests/ @HanzoRazer
+
+# Core packages (expand ownership as team grows)
+/packages/ @HanzoRazer
