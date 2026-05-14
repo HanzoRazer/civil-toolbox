@@ -305,6 +305,24 @@ Engineering software should never function as a black box.
 
 ---
 
+## Governance & Standards
+
+Civil Toolbox is governed by engineering reliability and transparent computation principles.
+
+- [Contributing Guide](CONTRIBUTING.md) — How to contribute code and methods
+- [Engineering Standards](ENGINEERING_STANDARDS.md) — Calculation transparency requirements
+- [Architecture](ARCHITECTURE.md) — Domain model and system design
+- [Roadmap](ROADMAP.md) — Development phases and milestones
+- [Security Policy](SECURITY.md) — Reporting vulnerabilities and calculation defects
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Community standards
+
+### Additional Documentation
+
+- [Verification Standards](docs/verification.md) — How calculations are validated
+- [Engineering References](docs/references.md) — Authoritative sources
+- [Testing Guide](tests/README.md) — Test organization and patterns
+
+---
 ## Contributing
 
 Contributions are welcome! All contributions should follow repository standards and verification requirements.
