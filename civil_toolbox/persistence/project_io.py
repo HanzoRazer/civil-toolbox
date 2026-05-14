@@ -11,8 +11,12 @@ from civil_toolbox.persistence.constants import (
     PROJECT_SCHEMA_VERSION,
 )
 from civil_toolbox.persistence.errors import (
+    InvalidProjectFileError,
+    ProjectFileReadError,
     ProjectFileWriteError,
 )
+from civil_toolbox.persistence.validation import validate_project_file_data
+from civil_toolbox.persistence.migration import migrate_project_data
 
 if TYPE_CHECKING:
     from civil_toolbox.domain.project import Project
@@ -60,3 +64,76 @@ def save_project(project: Project, path: str | Path) -> Path:
         ) from e
 
     return path
+
+
+def project_from_file_data(data: dict[str, Any]) -> "Project":
+    """Reconstruct a Project from validated file data.
+
+    Args:
+        data: Project file data dictionary (already validated).
+
+    Returns:
+        Reconstructed Project domain object.
+
+    Raises:
+        InvalidProjectFileError: If project payload cannot be reconstructed.
+    """
+    from civil_toolbox.domain.project import Project
+
+    try:
+        return Project.from_dict(data["project"])
+    except (KeyError, TypeError, ValueError) as e:
+        raise InvalidProjectFileError(
+            f"Failed to reconstruct project from file data: {e}",
+            field="project",
+        ) from e
+
+
+def load_project(path: str | Path) -> "Project":
+    """Load a Project from a Civil Toolbox project file.
+
+    Args:
+        path: File path to read (str or Path).
+
+    Returns:
+        Reconstructed Project domain object.
+
+    Raises:
+        ProjectFileReadError: If the file cannot be read or parsed.
+        InvalidProjectFileError: If the file is not a valid project file.
+        UnsupportedProjectSchemaError: If the schema version is not supported.
+    """
+    path = Path(path)
+
+    # Read file
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError as e:
+        raise ProjectFileReadError(
+            f"Project file not found: {path}",
+            path=str(path),
+        ) from e
+    except OSError as e:
+        raise ProjectFileReadError(
+            f"Failed to read project file: {e}",
+            path=str(path),
+        ) from e
+
+    # Parse JSON
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError as e:
+        raise ProjectFileReadError(
+            f"Invalid JSON in project file: {e}",
+            path=str(path),
+        ) from e
+
+    # Validate envelope
+    validate_project_file_data(data)
+
+    # Migrate if needed
+    data = migrate_project_data(data)
+
+    # Reconstruct project
+    return project_from_file_data(data)

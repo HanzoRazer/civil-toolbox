@@ -11,10 +11,17 @@ from civil_toolbox.persistence.constants import (
     PROJECT_FILE_TYPE,
     PROJECT_SCHEMA_VERSION,
 )
-from civil_toolbox.persistence.errors import ProjectFileWriteError
+from civil_toolbox.persistence.errors import (
+    InvalidProjectFileError,
+    ProjectFileReadError,
+    ProjectFileWriteError,
+    UnsupportedProjectSchemaError,
+)
 from civil_toolbox.persistence.project_io import (
     project_to_file_data,
+    project_from_file_data,
     save_project,
+    load_project,
 )
 
 
@@ -150,3 +157,254 @@ class TestSaveProject:
 
         assert len(data["project"]["scenarios"]) == 1
         assert len(data["project"]["scenarios"][0]["drainage_areas"]) == 1
+
+
+class TestProjectFromFileData:
+    """Tests for project_from_file_data."""
+
+    def test_reconstructs_minimal_project(self):
+        data = {
+            "file_type": PROJECT_FILE_TYPE,
+            "schema_version": PROJECT_SCHEMA_VERSION,
+            "project": {
+                "id": "proj-123",
+                "created_at": "2026-01-01T00:00:00",
+                "updated_at": "2026-01-02T00:00:00",
+                "name": "Test Project",
+                "client": None,
+                "description": None,
+                "jurisdiction": None,
+                "design_criteria": {},
+                "scenarios": [],
+            },
+        }
+        project = project_from_file_data(data)
+        assert project.id == "proj-123"
+        assert project.name == "Test Project"
+
+    def test_reconstructs_project_with_scenario(self):
+        data = {
+            "file_type": PROJECT_FILE_TYPE,
+            "schema_version": PROJECT_SCHEMA_VERSION,
+            "project": {
+                "id": "proj-456",
+                "created_at": "2026-01-01T00:00:00",
+                "updated_at": "2026-01-02T00:00:00",
+                "name": "With Scenario",
+                "client": None,
+                "description": None,
+                "jurisdiction": None,
+                "design_criteria": {},
+                "scenarios": [
+                    {
+                        "id": "scen-789",
+                        "created_at": "2026-01-01T00:00:00",
+                        "updated_at": "2026-01-01T00:00:00",
+                        "name": "Existing",
+                        "description": None,
+                        "project_id": "proj-456",
+                        "drainage_areas": [],
+                        "storm_events": [],
+                        "flow_paths": [],
+                        "infrastructure": [],
+                        "calculation_results": [],
+                    }
+                ],
+            },
+        }
+        project = project_from_file_data(data)
+        assert len(project.scenarios) == 1
+        assert project.scenarios[0].name == "Existing"
+
+
+class TestLoadProject:
+    """Tests for load_project."""
+
+    def test_loads_minimal_project(self, tmp_path: Path):
+        project = Project(name="Load Test")
+        file_path = tmp_path / "test.ctbx.json"
+        save_project(project, file_path)
+
+        loaded = load_project(file_path)
+        assert loaded.name == "Load Test"
+
+    def test_loads_project_with_metadata(self, tmp_path: Path):
+        project = Project(
+            name="Metadata Test",
+            client="Test Client",
+            jurisdiction="harris_county",
+        )
+        file_path = tmp_path / "test.ctbx.json"
+        save_project(project, file_path)
+
+        loaded = load_project(file_path)
+        assert loaded.client == "Test Client"
+        assert loaded.jurisdiction == "harris_county"
+
+    def test_loads_project_with_scenario(self, tmp_path: Path):
+        project = Project(name="Scenario Test")
+        scenario = Scenario(name="Existing Conditions")
+        project.add_scenario(scenario)
+
+        file_path = tmp_path / "test.ctbx.json"
+        save_project(project, file_path)
+
+        loaded = load_project(file_path)
+        assert len(loaded.scenarios) == 1
+        assert loaded.scenarios[0].name == "Existing Conditions"
+
+    def test_loads_project_with_drainage_area(self, tmp_path: Path):
+        project = Project(name="Drainage Test")
+        scenario = Scenario(name="Existing")
+        area = DrainageArea(name="Basin A", area_acres=50.0)
+        scenario.add_drainage_area(area)
+        project.add_scenario(scenario)
+
+        file_path = tmp_path / "test.ctbx.json"
+        save_project(project, file_path)
+
+        loaded = load_project(file_path)
+        assert len(loaded.scenarios[0].drainage_areas) == 1
+        assert loaded.scenarios[0].drainage_areas[0].area_acres == 50.0
+
+    def test_accepts_string_path(self, tmp_path: Path):
+        project = Project(name="String Test")
+        file_path = tmp_path / "test.ctbx.json"
+        save_project(project, file_path)
+
+        loaded = load_project(str(file_path))
+        assert loaded.name == "String Test"
+
+    def test_nonexistent_file_raises(self, tmp_path: Path):
+        file_path = tmp_path / "nonexistent.ctbx.json"
+        with pytest.raises(ProjectFileReadError) as exc_info:
+            load_project(file_path)
+        assert "not found" in str(exc_info.value)
+
+    def test_invalid_json_raises(self, tmp_path: Path):
+        file_path = tmp_path / "invalid.ctbx.json"
+        file_path.write_text("not valid json {{{", encoding="utf-8")
+
+        with pytest.raises(ProjectFileReadError) as exc_info:
+            load_project(file_path)
+        assert "Invalid JSON" in str(exc_info.value)
+
+    def test_wrong_file_type_raises(self, tmp_path: Path):
+        file_path = tmp_path / "wrong_type.ctbx.json"
+        data = {
+            "file_type": "wrong_type",
+            "schema_version": PROJECT_SCHEMA_VERSION,
+            "project": {},
+        }
+        file_path.write_text(json.dumps(data), encoding="utf-8")
+
+        with pytest.raises(InvalidProjectFileError):
+            load_project(file_path)
+
+    def test_unsupported_schema_raises(self, tmp_path: Path):
+        file_path = tmp_path / "old_schema.ctbx.json"
+        data = {
+            "file_type": PROJECT_FILE_TYPE,
+            "schema_version": "0.1.0",
+            "project": {},
+        }
+        file_path.write_text(json.dumps(data), encoding="utf-8")
+
+        with pytest.raises(UnsupportedProjectSchemaError) as exc_info:
+            load_project(file_path)
+        assert exc_info.value.version == "0.1.0"
+
+    def test_missing_project_raises(self, tmp_path: Path):
+        file_path = tmp_path / "no_project.ctbx.json"
+        data = {
+            "file_type": PROJECT_FILE_TYPE,
+            "schema_version": PROJECT_SCHEMA_VERSION,
+        }
+        file_path.write_text(json.dumps(data), encoding="utf-8")
+
+        with pytest.raises(InvalidProjectFileError):
+            load_project(file_path)
+
+
+class TestSaveLoadRoundTrip:
+    """Tests for save/load round trip."""
+
+    def test_minimal_project_round_trip(self, tmp_path: Path):
+        original = Project(name="Round Trip")
+        file_path = tmp_path / "roundtrip.ctbx.json"
+        save_project(original, file_path)
+        loaded = load_project(file_path)
+
+        assert loaded.id == original.id
+        assert loaded.name == original.name
+
+    def test_project_with_metadata_round_trip(self, tmp_path: Path):
+        original = Project(
+            name="Full Metadata",
+            client="Test Client",
+            description="Test description",
+            jurisdiction="harris_county",
+            design_criteria=DesignCriteria(
+                design_storm_years=100,
+                rainfall_distribution="Type III",
+            ),
+        )
+        file_path = tmp_path / "metadata.ctbx.json"
+        save_project(original, file_path)
+        loaded = load_project(file_path)
+
+        assert loaded.client == original.client
+        assert loaded.description == original.description
+        assert loaded.design_criteria.design_storm_years == 100
+
+    def test_project_with_scenario_round_trip(self, tmp_path: Path):
+        original = Project(name="Scenario Project")
+        scenario = Scenario(name="Existing Conditions")
+        original.add_scenario(scenario)
+
+        file_path = tmp_path / "scenario.ctbx.json"
+        save_project(original, file_path)
+        loaded = load_project(file_path)
+
+        assert len(loaded.scenarios) == 1
+        assert loaded.scenarios[0].id == scenario.id
+        assert loaded.scenarios[0].name == scenario.name
+
+    def test_project_with_nested_entities_round_trip(self, tmp_path: Path):
+        original = Project(name="Nested Entities")
+        scenario = Scenario(name="Full Scenario")
+        area = DrainageArea(
+            name="Basin A",
+            area_acres=50.0,
+            runoff_coefficient=0.65,
+            curve_number=80,
+        )
+        scenario.add_drainage_area(area)
+        original.add_scenario(scenario)
+
+        file_path = tmp_path / "nested.ctbx.json"
+        save_project(original, file_path)
+        loaded = load_project(file_path)
+
+        loaded_area = loaded.scenarios[0].drainage_areas[0]
+        assert loaded_area.id == area.id
+        assert loaded_area.name == area.name
+        assert loaded_area.area_acres == area.area_acres
+        assert loaded_area.runoff_coefficient == area.runoff_coefficient
+        assert loaded_area.curve_number == area.curve_number
+
+    def test_multiple_scenarios_round_trip(self, tmp_path: Path):
+        original = Project(name="Multi Scenario")
+        original.add_scenario(Scenario(name="Existing"))
+        original.add_scenario(Scenario(name="Proposed"))
+        original.add_scenario(Scenario(name="With Detention"))
+
+        file_path = tmp_path / "multi.ctbx.json"
+        save_project(original, file_path)
+        loaded = load_project(file_path)
+
+        assert len(loaded.scenarios) == 3
+        names = [s.name for s in loaded.scenarios]
+        assert "Existing" in names
+        assert "Proposed" in names
+        assert "With Detention" in names
