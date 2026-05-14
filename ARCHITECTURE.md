@@ -345,6 +345,32 @@ civil-toolbox/
 
 ---
 
+## Persistence Layer
+
+The persistence layer provides transparent project storage using JSON files.
+
+```text
+Domain Models → Project Persistence → Reports / UI / CLI / Future APIs
+```
+
+### Current Implementation
+
+- **Format**: JSON with `.ctbx.json` extension
+- **Schema versioning**: Explicit `schema_version` field
+- **Migration support**: Entry point for future schema migrations
+- **Validation**: Envelope validation before domain reconstruction
+
+### Persistence Principles
+
+1. **Transparent format** — Human-readable, diffable JSON
+2. **Schema-aware** — Version metadata enables future migrations
+3. **Validation-first** — Invalid files fail clearly before reconstruction
+4. **No side effects** — Persistence does not run calculations
+
+See [Project File Format](docs/project-file-format.md) for details.
+
+---
+
 ## Key Architectural Principles
 
 1. **Calculation kernels are pure** — No I/O, no state, no UI concerns

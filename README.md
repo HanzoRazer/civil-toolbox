@@ -319,9 +319,32 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 ### Additional Documentation
 
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
+- [Project File Format](docs/project-file-format.md) — Project persistence specification
 - [Verification Standards](docs/verification.md) — How calculations are validated
 - [Engineering References](docs/references.md) — Authoritative sources
 - [Testing Guide](tests/README.md) — Test organization and patterns
+
+---
+
+## Project Persistence
+
+Civil Toolbox project data can be saved and loaded using a transparent JSON-based project file format.
+
+```python
+from civil_toolbox.domain import Project
+from civil_toolbox.persistence import save_project, load_project
+
+# Create and save a project
+project = Project(name="Downtown Drainage Study")
+save_project(project, "downtown.ctbx.json")
+
+# Load a project
+loaded = load_project("downtown.ctbx.json")
+```
+
+Project files use the `.ctbx.json` extension and include schema metadata for future compatibility.
+
+See [Project File Format](docs/project-file-format.md) for details.
 
 ---
 ## Contributing
