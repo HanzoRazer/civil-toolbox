@@ -1,0 +1,1 @@
+"""Adapter error types."""
