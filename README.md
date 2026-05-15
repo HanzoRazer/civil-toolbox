@@ -89,15 +89,22 @@ pip install -e ".[dev]"
 ### Quick Start
 
 ```python
-from civil_toolbox import RationalMethod, TimeOfConcentration
+from civil_toolbox.calculators import RationalMethod, TimeOfConcentration
 
 # Calculate peak runoff using Rational Method
-Q = RationalMethod.calculate(
-    C=0.65,           # Runoff coefficient
-    i=4.5,            # Rainfall intensity (in/hr)
-    A=25              # Drainage area (acres)
+result = RationalMethod.calculate(
+    runoff_coefficient=0.65,
+    rainfall_intensity_in_per_hr=4.5,
+    area_acres=25.0,
 )
-print(f"Peak Runoff: {Q:.2f} cfs")
+print(f"Peak Runoff: {result.peak_runoff_cfs:.2f} cfs")
+
+# Calculate time of concentration
+tc_result = TimeOfConcentration.kirpich(
+    flow_length_ft=5000,
+    elevation_diff_ft=100,
+)
+print(f"Time of Concentration: {tc_result.tc_minutes:.1f} minutes")
 ```
 
 ---
@@ -214,42 +221,65 @@ Tt = (0.007 × (n × L)^0.8) / (P2^0.5 × S^0.4)
 ### Example 1: Storm Sewer Design
 
 ```python
-from civil_toolbox import RationalMethod, TimeOfConcentration
+from civil_toolbox.calculators import RationalMethod, TimeOfConcentration
 
-# Calculate Time of Concentration
-tc = TimeOfConcentration.kirpich(
-    length=2500,      # feet
-    slope=0.02        # ft/ft
+# Calculate Time of Concentration (returns MINUTES)
+tc_result = TimeOfConcentration.kirpich(
+    flow_length_ft=2500,
+    elevation_diff_ft=50,
 )
-print(f"Time of Concentration: {tc:.1f} minutes")
+print(f"Time of Concentration: {tc_result.tc_minutes:.1f} minutes")
 
 # Calculate Peak Runoff
-Q = RationalMethod.calculate(
-    C=0.85,           # Commercial development
-    i=5.2,            # in/hr
-    A=15              # acres
+result = RationalMethod.calculate(
+    runoff_coefficient=0.85,
+    rainfall_intensity_in_per_hr=5.2,
+    area_acres=15.0,
 )
-print(f"Peak Runoff: {Q:.1f} cfs")
+print(f"Peak Runoff: {result.peak_runoff_cfs:.1f} cfs")
 ```
 
-### Example 2: TR-55 Detention Pond Sizing
+### Example 2: TR-55 Runoff Depth
 
 ```python
-from civil_toolbox import TR55
+from civil_toolbox.calculators import TR55
 
-# Composite Curve Number calculation
-areas = [
-    (20, 98),    # 20 acres impervious, CN=98
-    (15, 74),    # 15 acres open space, CN=74
-    (15, 80)     # 15 acres residential, CN=80
-]
-
-cn_composite = TR55.composite_cn(areas)
-runoff_depth = TR55.runoff_depth(precipitation=5.0, curve_number=cn_composite)
-volume = TR55.runoff_volume(runoff_depth=runoff_depth, area_acres=50)
-
+# Calculate weighted curve number for composite area
+cn_composite = TR55.weighted_curve_number([
+    (98, 20.0),   # CN=98, 20 acres impervious
+    (74, 15.0),   # CN=74, 15 acres open space
+    (80, 15.0),   # CN=80, 15 acres residential
+])
 print(f"Composite CN: {cn_composite:.0f}")
-print(f"Runoff Volume: {volume:,.0f} cubic feet")
+
+# Calculate runoff depth
+result = TR55.runoff_depth(
+    rainfall_depth_in=5.0,
+    curve_number=cn_composite,
+)
+print(f"Runoff Depth: {result.runoff_depth_in:.2f} inches")
+```
+
+### Example 3: Composite Time of Concentration
+
+```python
+from civil_toolbox.calculators import TimeOfConcentration, KinematicWave
+
+# Multi-segment flow path: sheet flow + channel flow
+# Sheet flow (returns HOURS)
+sheet_result = KinematicWave.sheet_flow_time(
+    flow_length_ft=100,
+    slope_percent=2.0,
+    mannings_n=0.15,
+    rainfall_2yr_24hr_in=3.5,
+)
+
+# Use composite for multiple Tc segments
+tc_total = TimeOfConcentration.composite([
+    ("kerby", {"flow_length_ft": 200, "slope_percent": 2.0, "retardance_n": 0.40}),
+    ("kirpich", {"flow_length_ft": 3000, "elevation_diff_ft": 60}),
+])
+print(f"Total Tc: {tc_total:.1f} minutes")
 ```
 
 ---
@@ -318,6 +348,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 
 ### Additional Documentation
 
+- [Calculation Engine](docs/calculation-engine.md) — Hydrology calculator reference
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification
 - [Verification Standards](docs/verification.md) — How calculations are validated
