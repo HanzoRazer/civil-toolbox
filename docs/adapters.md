@@ -89,6 +89,16 @@ print(f"Tc: {result.outputs['tc_minutes']:.1f} minutes")
 
 **Note**: All Tc methods return time in **minutes**.
 
+### KinematicWave (Intentionally Indirect)
+
+The `KinematicWave` calculator is accessed through `TimeOfConcentrationAdapter.calculate_composite()` for sheet flow segments. A dedicated `KinematicWaveAdapter` is not provided because:
+
+1. Sheet flow Tc is rarely computed in isolation — it's part of a composite flow path
+2. The composite method auto-selects kinematic wave for `segment_type="sheet"`
+3. Direct domain workflows requiring standalone kinematic wave do not yet exist
+
+If a direct adapter is needed in the future, add `KinematicWaveAdapter` without modifying the existing composite workflow.
+
 ## Scenario Helpers
 
 Convenience functions that run calculations and attach results to scenarios.
