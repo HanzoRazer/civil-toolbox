@@ -349,6 +349,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 ### Additional Documentation
 
 - [Calculation Engine](docs/calculation-engine.md) — Hydrology calculator reference
+- [Domain Adapters](docs/adapters.md) — Connect domain entities to calculators
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification
 - [Verification Standards](docs/verification.md) — How calculations are validated
