@@ -399,6 +399,33 @@ See [Scenario Comparison](docs/comparison.md) for details.
 
 ---
 
+## Reporting Layer
+
+The reporting layer generates engineering documents from domain objects.
+
+```text
+Domain Objects + Comparison Results → Report Builder → Markdown/PDF
+```
+
+### Current Implementation
+
+- **Output formats**: Markdown (current), PDF (planned)
+- **Report types**: Project summary, scenario comparison, calculation appendix
+- **Components**: ReportSection, ReportTable, formatters
+- **Deterministic**: Same input produces identical output
+- **Testable**: Tables render to plain strings
+
+### Reporting Principles
+
+1. **No calculations** — Reporting only formats existing data
+2. **Composable** — Sections combine into reports
+3. **Format-agnostic** — Report data separates from rendering
+4. **Deterministic output** — Reproducible for engineering review
+
+See [Reporting Engine](docs/reporting.md) for details.
+
+---
+
 ## Key Architectural Principles
 
 1. **Calculation kernels are pure** — No I/O, no state, no UI concerns
