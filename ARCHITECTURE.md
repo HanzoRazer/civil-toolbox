@@ -371,6 +371,34 @@ See [Project File Format](docs/project-file-format.md) for details.
 
 ---
 
+## Comparison Layer
+
+The comparison layer enables scenario-to-scenario analysis.
+
+```text
+Scenario A + Scenario B → Entity Matching → Metric Comparison → Aggregated Results
+```
+
+### Current Implementation
+
+- **Match strategies**: auto (explicit > ID > name), id, name, explicit
+- **Recognized metrics**: peak_flow_cfs, runoff_depth_in, runoff_volume_cuft, time_of_concentration_min
+- **Aggregation**: Additive metrics (peak flow, volume) sum at scenario level
+- **Missing data**: Tracked with status (missing_baseline, missing_comparison)
+- **Zero baseline**: percent_delta=None with undefined_zero_baseline status
+- **Serialization**: Full round-trip support, ephemeral results (not persisted)
+
+### Comparison Principles
+
+1. **Data-first** — Comparison results are data structures, not reports
+2. **Explicit matching** — Entity pairing is controllable and auditable
+3. **Missing is visible** — Incomplete data produces status flags, not errors
+4. **Additive vs non-additive** — Only appropriate metrics aggregate at scenario level
+
+See [Scenario Comparison](docs/comparison.md) for details.
+
+---
+
 ## Key Architectural Principles
 
 1. **Calculation kernels are pure** — No I/O, no state, no UI concerns

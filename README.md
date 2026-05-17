@@ -297,7 +297,7 @@ print(f"Total Tc: {tc_total:.1f} minutes")
 
 ### Phase 2 — Planning Workflows
 
-- Scenario comparison (existing vs proposed, with/without detention)
+- ✅ Scenario comparison (existing vs proposed, with/without detention)
 - Design criteria libraries
 - Calculation audit trails
 - Review workflows
@@ -350,6 +350,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 
 - [Calculation Engine](docs/calculation-engine.md) — Hydrology calculator reference
 - [Domain Adapters](docs/adapters.md) — Connect domain entities to calculators
+- [Scenario Comparison](docs/comparison.md) — Compare results between scenarios
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification
 - [Verification Standards](docs/verification.md) — How calculations are validated
