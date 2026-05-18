@@ -6,8 +6,8 @@ Generate engineering reports from domain objects:
 - Calculation appendices
 
 Output formats:
-- Markdown (current)
-- PDF (planned)
+- Markdown
+- PDF (requires weasyprint)
 
 Example:
     >>> from civil_toolbox.reporting import (
@@ -17,6 +17,10 @@ Example:
     >>> report = generate_project_summary_report(project)
     >>> markdown = render_full_report_markdown(report)
     >>> print(markdown)
+
+PDF export example:
+    >>> from civil_toolbox.reporting.pdf import export_report_to_pdf
+    >>> export_report_to_pdf(report, "output.pdf")
 
 The reporting engine consumes domain objects and comparison results.
 It does not run calculations — it only formats existing data.
@@ -91,6 +95,28 @@ from civil_toolbox.reporting.markdown import (
     render_section_markdown,
     render_metadata_header,
     render_full_report_markdown,
+)
+
+from civil_toolbox.reporting.pdf import (
+    PdfExportUnavailableError,
+    export_report_to_pdf,
+    export_markdown_to_pdf,
+    export_html_to_pdf,
+    is_pdf_export_available,
+)
+
+from civil_toolbox.reporting.templates import (
+    escape_html,
+    render_html_document,
+    render_table_html,
+    render_section_html,
+    render_report_html,
+    render_report_to_html_document,
+    render_markdown_to_html_body,
+)
+
+from civil_toolbox.reporting.assets import (
+    get_report_css,
 )
 
 if TYPE_CHECKING:
@@ -278,4 +304,20 @@ __all__ = [
     # Report Generators
     "generate_project_summary_report",
     "generate_scenario_comparison_report",
+    # PDF Export
+    "PdfExportUnavailableError",
+    "export_report_to_pdf",
+    "export_markdown_to_pdf",
+    "export_html_to_pdf",
+    "is_pdf_export_available",
+    # HTML Templates
+    "escape_html",
+    "render_html_document",
+    "render_table_html",
+    "render_section_html",
+    "render_report_html",
+    "render_report_to_html_document",
+    "render_markdown_to_html_body",
+    # Assets
+    "get_report_css",
 ]

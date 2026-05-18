@@ -409,11 +409,23 @@ Domain Objects + Comparison Results → Report Builder → Markdown/PDF
 
 ### Current Implementation
 
-- **Output formats**: Markdown (current), PDF (planned)
+- **Output formats**: Markdown, PDF (via WeasyPrint)
 - **Report types**: Project summary, scenario comparison, calculation appendix
 - **Components**: ReportSection, ReportTable, formatters
 - **Deterministic**: Same input produces identical output
 - **Testable**: Tables render to plain strings
+
+### PDF Export Pipeline
+
+```text
+Report → HTML Templates → CSS Styling → WeasyPrint → PDF
+```
+
+PDF export features:
+- Professional page layout (letter size, headers/footers)
+- All section types render (tables, warnings, references)
+- Optional: graceful fallback to Markdown when WeasyPrint unavailable
+- Deterministic output where practical
 
 ### Reporting Principles
 
@@ -422,7 +434,7 @@ Domain Objects + Comparison Results → Report Builder → Markdown/PDF
 3. **Format-agnostic** — Report data separates from rendering
 4. **Deterministic output** — Reproducible for engineering review
 
-See [Reporting Engine](docs/reporting.md) for details.
+See [Reporting Engine](docs/reporting.md) and [PDF Export](docs/pdf-report-export.md) for details.
 
 ---
 

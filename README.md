@@ -86,6 +86,14 @@ python -m venv .venv
 pip install -e ".[dev]"
 ```
 
+### Optional: PDF Export
+
+To enable PDF report export:
+
+```bash
+pip install -e ".[pdf]"
+```
+
 ### Quick Start
 
 ```python
@@ -352,6 +360,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Domain Adapters](docs/adapters.md) — Connect domain entities to calculators
 - [Scenario Comparison](docs/comparison.md) — Compare results between scenarios
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
+- [PDF Export](docs/pdf-report-export.md) — Export reports to PDF
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification
 - [Verification Standards](docs/verification.md) — How calculations are validated

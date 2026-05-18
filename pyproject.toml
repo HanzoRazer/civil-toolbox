@@ -33,6 +33,14 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
 ]
+pdf = [
+    "weasyprint>=60.0",
+    "markdown>=3.0",
+]
+all = [
+    "weasyprint>=60.0",
+    "markdown>=3.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/HanzoRazer/civil-toolbox"

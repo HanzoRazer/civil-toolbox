@@ -1,0 +1,269 @@
+# PDF Report Export
+
+PDF export for Civil Toolbox engineering reports.
+
+## Overview
+
+The PDF export pipeline converts Report objects or Markdown content into professional engineering report PDFs. PDF export consumes existing data — it does not run calculations.
+
+## Installation
+
+PDF export requires optional dependencies:
+
+```bash
+pip install civil-toolbox[pdf]
+```
+
+Or install manually:
+
+```bash
+pip install weasyprint markdown
+```
+
+## Quick Start
+
+### Export Report to PDF
+
+```python
+from civil_toolbox.reporting import (
+    generate_project_summary_report,
+)
+from civil_toolbox.reporting.pdf import export_report_to_pdf
+
+# Generate a report
+report = generate_project_summary_report(project)
+
+# Export to PDF
+export_report_to_pdf(report, "project_summary.pdf")
+```
+
+### Export Markdown to PDF
+
+```python
+from civil_toolbox.reporting.pdf import export_markdown_to_pdf
+
+markdown_content = """
+# Engineering Report
+
+## Introduction
+
+This report summarizes the drainage analysis.
+"""
+
+export_markdown_to_pdf(markdown_content, "report.pdf", title="Engineering Report")
+```
+
+### Check Availability
+
+```python
+from civil_toolbox.reporting.pdf import is_pdf_export_available
+
+if is_pdf_export_available():
+    export_report_to_pdf(report, "output.pdf")
+else:
+    print("PDF export unavailable. Install weasyprint.")
+```
+
+## API Reference
+
+### export_report_to_pdf
+
+```python
+def export_report_to_pdf(
+    report: Report,
+    path: str | Path,
+    *,
+    optimize_images: bool = True,
+) -> Path
+```
+
+Export a Report object to PDF.
+
+**Arguments:**
+- `report`: The Report to export.
+- `path`: Output file path.
+- `optimize_images`: Whether to optimize embedded images (default: True).
+
+**Returns:** Path to the generated PDF file.
+
+**Raises:**
+- `PdfExportUnavailableError`: If WeasyPrint is not installed.
+- `RenderingError`: If PDF rendering fails.
+
+### export_markdown_to_pdf
+
+```python
+def export_markdown_to_pdf(
+    markdown_content: str,
+    path: str | Path,
+    *,
+    title: str = "Report",
+    optimize_images: bool = True,
+) -> Path
+```
+
+Export Markdown content to PDF.
+
+**Arguments:**
+- `markdown_content`: Markdown text to convert.
+- `path`: Output file path.
+- `title`: Document title for the PDF.
+- `optimize_images`: Whether to optimize embedded images.
+
+**Returns:** Path to the generated PDF file.
+
+### export_html_to_pdf
+
+```python
+def export_html_to_pdf(
+    html_content: str,
+    path: str | Path,
+    *,
+    optimize_images: bool = True,
+) -> Path
+```
+
+Export raw HTML content to PDF. Use for custom HTML templates.
+
+### is_pdf_export_available
+
+```python
+def is_pdf_export_available() -> bool
+```
+
+Check if PDF export dependencies are installed.
+
+## PDF Features
+
+### Page Layout
+
+- **Page size:** Letter (8.5" x 11")
+- **Margins:** 1" top/bottom, 0.75" left/right
+- **Headers:** Report title on subsequent pages
+- **Footers:** Page numbers ("Page X of Y")
+
+### Typography
+
+- **Body text:** Segoe UI / Calibri / Arial, 11pt
+- **Headings:** Bold, hierarchical sizes (18pt → 11pt)
+- **Tables:** 10pt with alternating row colors
+
+### Report Sections
+
+The PDF pipeline renders all section types:
+
+| Section Type | PDF Rendering |
+|--------------|---------------|
+| Title | H1 with border |
+| Heading | H2-H6 with appropriate styles |
+| Text | Paragraphs |
+| List | Bulleted lists |
+| Table | Styled tables with alignment |
+| Metadata | Boxed info block |
+| Assumptions | Styled list |
+| Warnings | Yellow highlighted box |
+| References | Numbered list |
+| Figure Placeholder | Dashed box placeholder |
+
+### Warnings Section
+
+Warnings render with special styling:
+- Yellow background
+- Warning icon (⚠)
+- Left border accent
+
+### Determinism
+
+PDF output is deterministic where practical:
+- Same Report → structurally identical PDFs
+- Timestamps in metadata may vary
+- File sizes within ~1KB tolerance
+
+## HTML Templates
+
+The PDF pipeline converts Reports to HTML before PDF generation. You can access the HTML layer directly:
+
+```python
+from civil_toolbox.reporting.templates import (
+    render_report_to_html_document,
+    render_markdown_to_html_body,
+)
+
+# Get HTML from Report
+html = render_report_to_html_document(report)
+
+# Get HTML from Markdown
+html_body = render_markdown_to_html_body(markdown)
+```
+
+### Custom CSS
+
+The default CSS is available via:
+
+```python
+from civil_toolbox.reporting.assets import get_report_css
+
+css = get_report_css()
+```
+
+## Error Handling
+
+### PdfExportUnavailableError
+
+Raised when WeasyPrint is not installed:
+
+```python
+from civil_toolbox.reporting.pdf import (
+    export_report_to_pdf,
+    PdfExportUnavailableError,
+)
+
+try:
+    export_report_to_pdf(report, "output.pdf")
+except PdfExportUnavailableError:
+    # Fall back to markdown export
+    from civil_toolbox.reporting import render_full_report_markdown
+    markdown = render_full_report_markdown(report)
+    with open("output.md", "w") as f:
+        f.write(markdown)
+```
+
+### RenderingError
+
+Raised when PDF generation fails:
+
+```python
+from civil_toolbox.reporting.errors import RenderingError
+
+try:
+    export_report_to_pdf(report, "output.pdf")
+except RenderingError as e:
+    print(f"PDF rendering failed: {e}")
+```
+
+## Limitations
+
+### Not Included
+
+- **Sealed/stamped certification:** No professional engineer seal blocks
+- **Digital signatures:** No cryptographic signing
+- **Embedded figures:** Figure placeholders only (no image embedding)
+- **Custom fonts:** Uses system fonts
+
+### Future Considerations
+
+Potential future enhancements:
+- Custom CSS injection
+- Cover page templates
+- Table of contents generation
+- Embedded images/figures
+- Professional seal placeholder blocks
+
+## Dependencies
+
+| Package | Purpose | Version |
+|---------|---------|---------|
+| weasyprint | HTML to PDF conversion | ≥60.0 |
+| markdown | Markdown to HTML (optional) | ≥3.0 |
+
+WeasyPrint has system dependencies (Pango, Cairo). See [WeasyPrint installation](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) for platform-specific instructions.
