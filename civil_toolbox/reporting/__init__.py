@@ -117,6 +117,7 @@ from civil_toolbox.reporting.templates import (
 
 from civil_toolbox.reporting.assets import (
     get_report_css,
+    get_disclaimer_text,
 )
 
 if TYPE_CHECKING:
@@ -320,4 +321,5 @@ __all__ = [
     "render_markdown_to_html_body",
     # Assets
     "get_report_css",
+    "get_disclaimer_text",
 ]

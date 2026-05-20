@@ -79,6 +79,11 @@ def export_report_to_pdf(
     output_path = Path(path)
 
     try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        raise RenderingError(f"Failed to create output directory: {e}") from e
+
+    try:
         html_content = render_report_to_html_document(report)
 
         html_doc = weasyprint.HTML(string=html_content)
@@ -116,13 +121,21 @@ def export_markdown_to_pdf(
 
     Raises:
         PdfExportUnavailableError: If WeasyPrint is not installed.
-        RenderingError: If PDF rendering fails.
+        RenderingError: If markdown is empty or PDF rendering fails.
     """
+    if not markdown_content or not markdown_content.strip():
+        raise RenderingError("Cannot export empty or whitespace-only markdown to PDF")
+
     _check_weasyprint_available()
 
     import weasyprint
 
     output_path = Path(path)
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        raise RenderingError(f"Failed to create output directory: {e}") from e
 
     try:
         html_body = render_markdown_to_html_body(markdown_content)
@@ -170,6 +183,11 @@ def export_html_to_pdf(
     import weasyprint
 
     output_path = Path(path)
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        raise RenderingError(f"Failed to create output directory: {e}") from e
 
     try:
         html_doc = weasyprint.HTML(string=html_content)

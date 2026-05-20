@@ -397,3 +397,152 @@ class TestPdfContent:
 
             assert result.exists()
             assert result.stat().st_size > 0
+
+
+class TestEmptyMarkdownValidation:
+    """Tests for empty markdown validation."""
+
+    def test_empty_string_raises_rendering_error(self):
+        """Empty string raises RenderingError."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "test.pdf"
+
+            with pytest.raises(RenderingError) as exc_info:
+                export_markdown_to_pdf("", path)
+
+            assert "empty" in str(exc_info.value).lower()
+
+    def test_whitespace_only_raises_rendering_error(self):
+        """Whitespace-only string raises RenderingError."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "test.pdf"
+
+            with pytest.raises(RenderingError) as exc_info:
+                export_markdown_to_pdf("   \n\t\n   ", path)
+
+            assert "empty" in str(exc_info.value).lower()
+
+    def test_newlines_only_raises_rendering_error(self):
+        """Newlines-only string raises RenderingError."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "test.pdf"
+
+            with pytest.raises(RenderingError) as exc_info:
+                export_markdown_to_pdf("\n\n\n", path)
+
+            assert "empty" in str(exc_info.value).lower()
+
+
+class TestParentDirectoryCreation:
+    """Tests for automatic parent directory creation."""
+
+    @requires_weasyprint
+    def test_creates_parent_directories_for_report(self):
+        """Creates parent directories when exporting report."""
+        report = Report(
+            metadata=ReportMetadata(
+                title="Test",
+                report_type=ReportType.PROJECT_SUMMARY,
+            ),
+            sections=[
+                ReportSection(
+                    section_type=SectionType.TEXT,
+                    content="Test content",
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "nested" / "dirs" / "test.pdf"
+
+            assert not path.parent.exists()
+
+            result = export_report_to_pdf(report, path)
+
+            assert result.exists()
+            assert path.parent.exists()
+
+    @requires_weasyprint
+    def test_creates_parent_directories_for_markdown(self):
+        """Creates parent directories when exporting markdown."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "deeply" / "nested" / "output.pdf"
+
+            assert not path.parent.exists()
+
+            result = export_markdown_to_pdf("# Test", path)
+
+            assert result.exists()
+            assert path.parent.exists()
+
+    @requires_weasyprint
+    def test_creates_parent_directories_for_html(self):
+        """Creates parent directories when exporting HTML."""
+        html = "<!DOCTYPE html><html><body><p>Test</p></body></html>"
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "new" / "subdir" / "test.pdf"
+
+            assert not path.parent.exists()
+
+            result = export_html_to_pdf(html, path)
+
+            assert result.exists()
+            assert path.parent.exists()
+
+
+class TestDisclaimer:
+    """Tests for professional-use disclaimer."""
+
+    def test_disclaimer_text_available(self):
+        """Disclaimer text function is available."""
+        from civil_toolbox.reporting.assets import get_disclaimer_text
+
+        text = get_disclaimer_text()
+
+        assert "Civil Toolbox" in text
+        assert "qualified professional" in text
+
+    def test_disclaimer_in_html_document(self):
+        """Disclaimer is included in HTML document by default."""
+        from civil_toolbox.reporting.templates import render_html_document
+
+        html = render_html_document("<p>Test</p>", title="Test")
+
+        assert "document-disclaimer" in html
+        assert "Civil Toolbox" in html
+
+    def test_disclaimer_can_be_disabled(self):
+        """Disclaimer can be disabled."""
+        from civil_toolbox.reporting.templates import render_html_document
+        from civil_toolbox.reporting.assets import get_disclaimer_text
+
+        html = render_html_document(
+            "<p>Test</p>",
+            title="Test",
+            include_disclaimer=False,
+        )
+
+        assert get_disclaimer_text() not in html
+
+    def test_disclaimer_in_report_html(self):
+        """Disclaimer appears in rendered report HTML."""
+        from civil_toolbox.reporting.templates import render_report_to_html_document
+
+        report = Report(
+            metadata=ReportMetadata(
+                title="Test Report",
+                report_type=ReportType.PROJECT_SUMMARY,
+            ),
+            sections=[
+                ReportSection(
+                    section_type=SectionType.TEXT,
+                    content="Content",
+                ),
+            ],
+        )
+
+        html = render_report_to_html_document(report)
+
+        assert "document-disclaimer" in html
+        assert "qualified professional" in html

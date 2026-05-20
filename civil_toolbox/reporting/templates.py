@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from civil_toolbox.reporting.assets import get_report_css
+from civil_toolbox.reporting.assets import get_report_css, get_disclaimer_text
 from civil_toolbox.reporting.formatters import format_datetime
 
 if TYPE_CHECKING:
@@ -33,17 +33,26 @@ def escape_html(text: str) -> str:
     )
 
 
-def render_html_document(body: str, title: str = "Report") -> str:
+def render_html_document(
+    body: str,
+    title: str = "Report",
+    include_disclaimer: bool = True,
+) -> str:
     """Render a complete HTML document.
 
     Args:
         body: HTML body content.
         title: Document title.
+        include_disclaimer: Whether to include the professional-use disclaimer.
 
     Returns:
         Complete HTML document string.
     """
     css = get_report_css()
+    disclaimer = ""
+    if include_disclaimer:
+        disclaimer_text = escape_html(get_disclaimer_text())
+        disclaimer = f'\n<div class="document-disclaimer">{disclaimer_text}</div>'
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +63,7 @@ def render_html_document(body: str, title: str = "Report") -> str:
     </style>
 </head>
 <body>
-{body}
+{body}{disclaimer}
 </body>
 </html>"""
 
