@@ -187,25 +187,29 @@ def rational_q(c: float, i_in_per_hr: float, a_acres: float) -> CalcResult:
 
 Infrastructure objects are first-class entities with hydraulic properties.
 
-### Planned Types
+### Implemented Types
 
 | Type | Properties |
 |------|------------|
-| Pipe | diameter, material, slope, length, Manning's n |
-| Culvert | shape, dimensions, inlet type, outlet type |
-| Channel | cross-section, slope, lining, Manning's n |
-| Inlet | type, efficiency curve, spread |
-| Detention Pond | stage-storage, outlet structure |
-| Outlet Structure | weir, orifice, riser configuration |
+| Pipe | shape (circular/box/arch), diameter/width/height, slope, length, Manning's n |
+| Culvert | shape, dimensions, inlet/outlet type, embankment, headwater |
+| OpenChannel | shape (rectangular/trapezoidal/triangular), width, depth, side slopes |
+| Inlet | type (grate/curb/combination/slotted), dimensions, clogging factor |
+| DetentionFacility | stage-storage curve, spillway, outlet reference |
+| OutletStructure | type (orifice/weir/riser/combined), coefficients, dimensions |
+| Swale | type (grass/bioswale/rock), width, depth, side slope, infiltration |
 
-### Hydraulic Analysis
+### Network Model
 
-Each element supports:
+Elements connect via InfrastructureNode references:
 
-- Capacity calculation
-- Headloss calculation
-- Surcharge analysis (where applicable)
-- Connection to upstream/downstream elements
+- Pipes, culverts, channels: upstream_node_id, downstream_node_id
+- Inlets: node_id
+- Detention: outlet_node_id
+
+### Hydraulic Analysis (Future)
+
+Capacity, headloss, and surcharge calculations will be added in infrastructure-sizing-foundation
 
 ---
 
@@ -397,6 +401,124 @@ Scenario A + Scenario B → Entity Matching → Metric Comparison → Aggregated
 
 See [Scenario Comparison](docs/comparison.md) for details.
 
+### Storm Sensitivity Comparison
+
+Analyze how metrics change across storm intensities for a single scenario.
+
+```text
+Scenario + Multiple Storms → Per-Entity Per-Storm Metrics → Storm Totals
+```
+
+- **Baseline selection**: Lowest return period storm (or explicit)
+- **Storm linking**: Via `storm_event_id` (priority) or `storm_event_name` (fallback)
+- **Flat list metrics**: Entity + storm + metric per row
+- **Additive totals**: Peak flow, runoff volume summed per storm
+
+See [Storm Sensitivity Comparison](docs/storm-sensitivity-comparison.md) for details.
+
+---
+
+## Rainfall Layer
+
+The rainfall layer provides structured IDF curve data for storm event generation.
+
+```text
+IDF Curve Data → Intensity/Depth Lookup → StormEvent Generation → Calculators
+```
+
+### Current Implementation
+
+- **IDF data models**: IDFPoint, IDFCurve
+- **Lookup**: Intensity and depth with optional duration interpolation
+- **Storm generation**: Create domain StormEvent objects from IDF data
+- **No extrapolation**: Lookups outside data range fail clearly
+- **Serialization**: Full round-trip support
+
+### Rainfall Principles
+
+1. **Deterministic** — Same inputs always produce same outputs
+2. **No external calls** — Static data, no live API dependencies
+3. **Explicit interpolation** — Duration interpolation enabled by default, return period interpolation not implemented
+4. **No silent extrapolation** — Out-of-range lookups fail with clear errors
+5. **Units are explicit** — Field names include units (duration_minutes, rainfall_intensity_in_per_hr)
+
+See [IDF Curves](docs/idf-curves.md) for details.
+
+---
+
+## Design Criteria Layer
+
+The design criteria layer provides structured storage for jurisdiction-specific design standards.
+
+```text
+Design Criteria → Coefficient/CN Lookup → Storm Definitions → StormEvent Generation
+```
+
+### Current Implementation
+
+- **RunoffCoefficientTable**: Land use to coefficient lookup (min/max/typical)
+- **CurveNumberTable**: Nested lookup by land use and soil group (A/B/C/D)
+- **DesignStormDefinition**: Named design storms with return period and duration
+- **DesignCriteria**: Complete criteria set for a jurisdiction/project
+- **DesignCriteriaLibrary**: Registry for managing multiple criteria sets
+- **Validation**: Coefficients (0-1), CNs (0-100), soil groups (A/B/C/D)
+- **Serialization**: Full round-trip support
+
+### Design Criteria Principles
+
+1. **Static reference data** — Plain dataclasses, not entities
+2. **Deterministic lookup** — No external API calls
+3. **Explicit validation** — Invalid data fails immediately
+4. **IDF integration** — Design storms derive intensity/depth from IDF curves
+5. **Registry pattern** — Multiple criteria sets managed in libraries
+
+See [Design Criteria Libraries](docs/design-criteria-libraries.md) for details.
+
+---
+
+## Infrastructure Modeling Layer
+
+The infrastructure layer provides data models for drainage infrastructure elements.
+
+```text
+InfrastructureNetwork
+ ├── InfrastructureNode[]
+ │    ├── id, name, node_type
+ │    └── elevations (invert, rim, ground)
+ │
+ └── NetworkElement[]
+      ├── Pipe (circular, box, arch, elliptical)
+      ├── Inlet (grate, curb_opening, combination, slotted)
+      ├── Culvert (with inlet/outlet control)
+      ├── OpenChannel (rectangular, trapezoidal, triangular)
+      ├── DetentionFacility (stage-storage curves)
+      ├── OutletStructure (orifice, weir, riser, combined)
+      └── Swale (grass, bioswale, rock, concrete)
+```
+
+### Current Implementation
+
+- **InfrastructureNode**: Junction points (manholes, junctions, outfalls)
+- **Pipe**: Conduits with shape-specific dimensions (circular: diameter; box/arch: width+height)
+- **Inlet**: Surface collection with clogging factors
+- **Culvert**: Road crossings with inlet type and headwater limits
+- **OpenChannel**: Open conveyances with shape-specific geometry
+- **DetentionFacility**: Storage ponds with stage-storage interpolation
+- **OutletStructure**: Discharge control with orifice/weir properties
+- **Swale**: Vegetated channels with infiltration support
+- **InfrastructureNetwork**: Connected networks with validation
+- **InfrastructureSchedule**: Tabular output for reporting
+
+### Infrastructure Principles
+
+1. **Plain dataclasses** — Static models, not BaseEntity
+2. **Explicit dimensions** — Separate fields for different shapes
+3. **Network validation** — Connectivity checks, disconnected node warnings
+4. **Serialization** — Full round-trip support for all element types
+5. **Unit conversions** — Properties convert inches to feet
+
+See [Infrastructure Modeling](docs/infrastructure-modeling.md) for details.
+
 ---
 
 ## Reporting Layer
@@ -414,6 +536,31 @@ Domain Objects + Comparison Results → Report Builder → Markdown/PDF
 - **Components**: ReportSection, ReportTable, formatters
 - **Deterministic**: Same input produces identical output
 - **Testable**: Tables render to plain strings
+
+### Report Templates
+
+Templates define report structure, section ordering, and formatting intent:
+
+```text
+Project / Scenario / Comparison Data
+        ↓
+Report Template
+        ↓
+Template Builder
+        ↓
+Structured Report
+        ↓
+Markdown Renderer
+        ↓
+PDF Export
+```
+
+Template features:
+- Reusable report definitions
+- Configurable sections and appendices
+- Built-in templates (project_summary, scenario_comparison, etc.)
+- Serializable for sharing and versioning
+- Validation before building
 
 ### PDF Export Pipeline
 
@@ -433,8 +580,9 @@ PDF export features:
 2. **Composable** — Sections combine into reports
 3. **Format-agnostic** — Report data separates from rendering
 4. **Deterministic output** — Reproducible for engineering review
+5. **Templates are data** — Templates define structure, not logic
 
-See [Reporting Engine](docs/reporting.md) and [PDF Export](docs/pdf-report-export.md) for details.
+See [Reporting Engine](docs/reporting.md), [Report Templates](docs/report-templates.md), and [PDF Export](docs/pdf-report-export.md) for details.
 
 ---
 
