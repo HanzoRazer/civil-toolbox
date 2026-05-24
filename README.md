@@ -368,6 +368,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Infrastructure Sizing](docs/infrastructure-sizing.md) — Capacity checks using Manning's equation
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
 - [Report Templates](docs/report-templates.md) — Reusable report templates
+- [Infrastructure Reporting](docs/infrastructure-reporting.md) — Infrastructure schedules and sizing reports
 - [PDF Export](docs/pdf-report-export.md) — Export reports to PDF
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification

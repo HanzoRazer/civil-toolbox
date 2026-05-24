@@ -588,7 +588,9 @@ PDF Export
 Template features:
 - Reusable report definitions
 - Configurable sections and appendices
-- Built-in templates (project_summary, scenario_comparison, etc.)
+- Built-in templates (project_summary, scenario_comparison, infrastructure_summary_report, etc.)
+- Infrastructure schedule tables (pipes, inlets, detention)
+- Sizing check summaries with warnings and assumptions
 - Serializable for sharing and versioning
 - Validation before building
 
@@ -612,7 +614,7 @@ PDF export features:
 4. **Deterministic output** — Reproducible for engineering review
 5. **Templates are data** — Templates define structure, not logic
 
-See [Reporting Engine](docs/reporting.md), [Report Templates](docs/report-templates.md), and [PDF Export](docs/pdf-report-export.md) for details.
+See [Reporting Engine](docs/reporting.md), [Report Templates](docs/report-templates.md), [Infrastructure Reporting](docs/infrastructure-reporting.md), and [PDF Export](docs/pdf-report-export.md) for details.
 
 ---
 
