@@ -306,17 +306,19 @@ print(f"Total Tc: {tc_total:.1f} minutes")
 ### Phase 2 — Planning Workflows
 
 - ✅ Scenario comparison (existing vs proposed, with/without detention)
-- Design criteria libraries
+- ✅ Storm sensitivity comparison (analyze response across storm intensities)
+- ✅ IDF curve support (rainfall intensity lookup and storm generation)
+- ✅ Design criteria libraries (runoff coefficients, curve numbers, design storms)
 - Calculation audit trails
 - Review workflows
 
 ### Phase 3 — Infrastructure Modeling
 
-- Pipe networks and storm sewers
-- Detention systems
-- Culvert analysis
+- ✅ Infrastructure element models (pipes, culverts, channels, inlets, detention, outlets, swales)
+- ✅ Infrastructure networks with connectivity validation
+- ✅ Infrastructure capacity checks (Manning's equation)
 - Hydraulic grading
-- Infrastructure schedules
+- Infrastructure schedules for reporting
 
 ### Phase 4 — Spatial Analysis
 
@@ -359,7 +361,13 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Calculation Engine](docs/calculation-engine.md) — Hydrology calculator reference
 - [Domain Adapters](docs/adapters.md) — Connect domain entities to calculators
 - [Scenario Comparison](docs/comparison.md) — Compare results between scenarios
+- [Storm Sensitivity](docs/storm-sensitivity-comparison.md) — Analyze response across storm intensities
+- [IDF Curves](docs/idf-curves.md) — Rainfall intensity lookup and storm generation
+- [Design Criteria Libraries](docs/design-criteria-libraries.md) — Jurisdiction-specific design standards
+- [Infrastructure Modeling](docs/infrastructure-modeling.md) — Pipes, culverts, channels, detention facilities
+- [Infrastructure Sizing](docs/infrastructure-sizing.md) — Capacity checks using Manning's equation
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
+- [Report Templates](docs/report-templates.md) — Reusable report templates
 - [PDF Export](docs/pdf-report-export.md) — Export reports to PDF
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification

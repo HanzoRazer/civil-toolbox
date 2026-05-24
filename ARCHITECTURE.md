@@ -521,6 +521,36 @@ See [Infrastructure Modeling](docs/infrastructure-modeling.md) for details.
 
 ---
 
+## Infrastructure Sizing Layer
+
+The infrastructure sizing layer provides simplified capacity checks for drainage elements.
+
+```text
+Infrastructure Element + Design Flow → Manning's Equation → InfrastructureCheckResult
+```
+
+### Current Implementation
+
+- **Manning's equation**: Q = (1.49/n) * A * R^(2/3) * S^(1/2)
+- **Pipe capacity**: Full-flow capacity using circular/box geometry
+- **Culvert barrel capacity**: Not inlet/outlet controlled
+- **Channel capacity**: Uniform flow at specified depth
+- **Swale capacity**: Trapezoidal section, conveyance only
+- **Detention storage**: Volume comparison, no routing
+- **Structured results**: InfrastructureCheckResult with warnings and assumptions
+
+### Sizing Principles
+
+1. **Screening-level only** — Not detailed hydraulic analysis
+2. **Design flow is explicit** — Must be passed as parameter
+3. **No mutations** — Infrastructure objects are not modified
+4. **Warnings and assumptions** — Transparent about limitations
+5. **Structured output** — Consistent InfrastructureCheckResult format
+
+See [Infrastructure Sizing](docs/infrastructure-sizing.md) for details.
+
+---
+
 ## Reporting Layer
 
 The reporting layer generates engineering documents from domain objects.
