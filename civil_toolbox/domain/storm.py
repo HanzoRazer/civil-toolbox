@@ -25,6 +25,7 @@ class StormEvent(BaseEntity):
     rainfall_intensity_in_per_hr: float | None = None
     distribution: str | None = None
     description: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.name:
@@ -50,6 +51,7 @@ class StormEvent(BaseEntity):
             "rainfall_intensity_in_per_hr": self.rainfall_intensity_in_per_hr,
             "distribution": self.distribution,
             "description": self.description,
+            "metadata": self.metadata,
         })
         return base
 
@@ -68,4 +70,5 @@ class StormEvent(BaseEntity):
             rainfall_intensity_in_per_hr=data.get("rainfall_intensity_in_per_hr"),
             distribution=data.get("distribution"),
             description=data.get("description"),
+            metadata=data.get("metadata", {}),
         )

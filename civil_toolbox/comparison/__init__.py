@@ -1,9 +1,15 @@
-"""Scenario comparison module for Civil Toolbox.
+"""Comparison module for Civil Toolbox.
 
-Compare drainage analysis results between scenarios:
-- Existing vs Proposed
-- Alternative A vs Alternative B
-- Phase 1 vs Phase 2
+Two comparison modes:
+
+1. **Scenario Comparison** — Compare different scenarios under the same storm:
+   - Existing vs Proposed
+   - Alternative A vs Alternative B
+   - Phase 1 vs Phase 2
+
+2. **Storm Sensitivity** — Compare a single scenario across multiple storms:
+   - 10-year vs 100-year response
+   - Analyze how metrics scale with storm intensity
 
 Recognized metrics:
 - peak_flow_cfs — additive, summed at scenario level
@@ -11,13 +17,7 @@ Recognized metrics:
 - runoff_depth_in — per-entity only
 - time_of_concentration_min — per-entity only
 
-Match strategies:
-- auto — explicit map > ID > normalized name (default)
-- id — match by entity ID only
-- name — match by normalized name only
-- explicit — use explicit ID mapping only
-
-Example:
+Example (scenario comparison):
     >>> from civil_toolbox.comparison import compare_scenarios, ComparisonMetric
     >>> result = compare_scenarios(
     ...     existing_scenario,
@@ -28,6 +28,13 @@ Example:
     ...     peak = entity.metrics.get(ComparisonMetric.PEAK_FLOW_CFS)
     ...     if peak and peak.delta:
     ...         print(f"{entity.entity_name}: {peak.delta:+.1f} cfs")
+
+Example (storm sensitivity):
+    >>> from civil_toolbox.comparison import compare_scenario_across_storms
+    >>> result = compare_scenario_across_storms(scenario)
+    >>> for row in result.metrics:
+    ...     if row.metric.value == "peak_flow_cfs":
+    ...         print(f"{row.entity_name} / {row.storm_event_name}: {row.value:.1f} cfs")
 """
 
 from civil_toolbox.comparison.models import (
@@ -75,6 +82,14 @@ from civil_toolbox.comparison.scenario_comparison import (
     compare_scenarios,
 )
 
+from civil_toolbox.comparison.storm_sensitivity import (
+    StormSensitivityStatus,
+    StormSensitivityMetric,
+    StormSensitivityTotals,
+    StormSensitivityResult,
+    compare_scenario_across_storms,
+)
+
 __all__ = [
     # Models
     "ComparisonMetric",
@@ -109,4 +124,10 @@ __all__ = [
     # Main API
     "ScenarioComparison",
     "compare_scenarios",
+    # Storm Sensitivity
+    "StormSensitivityStatus",
+    "StormSensitivityMetric",
+    "StormSensitivityTotals",
+    "StormSensitivityResult",
+    "compare_scenario_across_storms",
 ]

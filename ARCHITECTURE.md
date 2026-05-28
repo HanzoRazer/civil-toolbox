@@ -618,6 +618,46 @@ See [Reporting Engine](docs/reporting.md), [Report Templates](docs/report-templa
 
 ---
 
+## GIS Workflow Layer
+
+The GIS layer provides spatial feature models and GeoJSON support for map-based workflows.
+
+```text
+Domain / Infrastructure Entities → Spatial Features → GeoJSON → Future Map Workflows
+```
+
+### Current Implementation
+
+- **Geometry types**: Point, LineString, Polygon (GeoJSON-compatible)
+- **SpatialFeature**: Geometry + properties + entity linkage
+- **SpatialFeatureCollection**: Feature groups with coordinate reference
+- **GeoJSON I/O**: Import/export with validation
+- **Entity linking**: Utilities to create features from domain/infrastructure objects
+- **Bounds calculation**: Bounding box for geometry and collections
+
+### Feature Roles
+
+| Role | Geometry | Use Case |
+|------|----------|----------|
+| `drainage_area` | Polygon | Watershed boundaries |
+| `flow_path` | LineString | Water travel paths |
+| `infrastructure_node` | Point | Manholes, inlets, junctions |
+| `infrastructure_link` | LineString | Pipes, culverts, channels |
+| `project_boundary` | Polygon | Site extents |
+| `reference` | Any | Supporting geometry |
+
+### GIS Principles
+
+1. **No heavy dependencies** — Pure Python, no Shapely/GeoPandas yet
+2. **GeoJSON-first** — Standard interchange format
+3. **Entity linking** — Features reference domain objects by ID
+4. **Metadata only CRS** — Coordinate reference is metadata, no reprojection
+5. **No calculations** — GIS layer does not compute hydrology
+
+See [GIS Workflows](docs/gis-workflows.md) for details.
+
+---
+
 ## Key Architectural Principles
 
 1. **Calculation kernels are pure** — No I/O, no state, no UI concerns
