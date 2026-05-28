@@ -42,5 +42,69 @@ Example:
     >>> save_geojson(collection, "site.geojson")
 """
 
-# Public API will be exposed after implementation
-__all__: list[str] = []
+from civil_toolbox.gis.geometry import (
+    Geometry,
+    geometry_bounds,
+)
+
+from civil_toolbox.gis.features import (
+    SpatialFeature,
+)
+
+from civil_toolbox.gis.collections import (
+    SpatialFeatureCollection,
+    collection_bounds,
+)
+
+from civil_toolbox.gis.geojson import (
+    export_feature_collection_to_geojson,
+    import_feature_collection_from_geojson,
+    save_geojson,
+    load_geojson,
+)
+
+from civil_toolbox.gis.linking import (
+    feature_for_drainage_area,
+    feature_for_infrastructure_node,
+    feature_for_pipe,
+    feature_for_flow_path,
+)
+
+from civil_toolbox.gis.examples import (
+    create_example_spatial_feature_collection,
+)
+
+from civil_toolbox.gis.errors import (
+    GISError,
+    InvalidGeometryError,
+    InvalidGeoJSONError,
+    SpatialLinkError,
+)
+
+__all__ = [
+    # Geometry
+    "Geometry",
+    "geometry_bounds",
+    # Features
+    "SpatialFeature",
+    # Collections
+    "SpatialFeatureCollection",
+    "collection_bounds",
+    # GeoJSON I/O
+    "export_feature_collection_to_geojson",
+    "import_feature_collection_from_geojson",
+    "save_geojson",
+    "load_geojson",
+    # Entity linking
+    "feature_for_drainage_area",
+    "feature_for_infrastructure_node",
+    "feature_for_pipe",
+    "feature_for_flow_path",
+    # Examples
+    "create_example_spatial_feature_collection",
+    # Errors
+    "GISError",
+    "InvalidGeometryError",
+    "InvalidGeoJSONError",
+    "SpatialLinkError",
+]
