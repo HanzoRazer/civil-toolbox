@@ -322,7 +322,7 @@ print(f"Total Tc: {tc_total:.1f} minutes")
 
 ### Phase 4 — Spatial Analysis
 
-- GIS integration
+- ✅ GIS workflow foundation (spatial features, GeoJSON import/export, entity linking)
 - Map-based drainage area delineation
 - Terrain analysis
 - Flow path tracing
@@ -369,6 +369,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
 - [Report Templates](docs/report-templates.md) — Reusable report templates
 - [Infrastructure Reporting](docs/infrastructure-reporting.md) — Infrastructure schedules and sizing reports
+- [GIS Workflows](docs/gis-workflows.md) — Spatial features and GeoJSON import/export
 - [PDF Export](docs/pdf-report-export.md) — Export reports to PDF
 - [Domain Model](docs/domain-model.md) — Typed entities for drainage analysis
 - [Project File Format](docs/project-file-format.md) — Project persistence specification
