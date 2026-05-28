@@ -22,6 +22,17 @@ PDF export example:
     >>> from civil_toolbox.reporting.pdf import export_report_to_pdf
     >>> export_report_to_pdf(report, "output.pdf")
 
+Template-based reports:
+    >>> from civil_toolbox.reporting import (
+    ...     build_report_from_template,
+    ...     get_default_template_registry,
+    ...     ReportTemplateContext,
+    ... )
+    >>> registry = get_default_template_registry()
+    >>> template = registry.get("project_summary")
+    >>> context = ReportTemplateContext(project=my_project)
+    >>> report = build_report_from_template(template, context)
+
 The reporting engine consumes domain objects and comparison results.
 It does not run calculations — it only formats existing data.
 """
@@ -118,6 +129,59 @@ from civil_toolbox.reporting.templates import (
 from civil_toolbox.reporting.assets import (
     get_report_css,
     get_disclaimer_text,
+)
+
+from civil_toolbox.reporting.report_templates import (
+    ReportTemplate,
+    SectionTemplate,
+    SUPPORTED_SECTION_TYPES,
+    SUPPORTED_FORMATTING_PROFILES,
+)
+
+from civil_toolbox.reporting.template_context import (
+    ReportTemplateContext,
+)
+
+from civil_toolbox.reporting.template_registry import (
+    ReportTemplateRegistry,
+    TemplateNotFoundError,
+)
+
+from civil_toolbox.reporting.template_validation import (
+    validate_template,
+    validate_template_context,
+    can_build_section,
+    TemplateValidationError,
+    ContextValidationError,
+)
+
+from civil_toolbox.reporting.template_builders import (
+    build_report_from_template,
+    TemplateBuildError,
+)
+
+from civil_toolbox.reporting.builtins import (
+    get_builtin_templates,
+    get_default_template_registry,
+)
+
+from civil_toolbox.reporting.infrastructure_tables import (
+    build_infrastructure_summary_table,
+    build_pipe_schedule_table,
+    build_inlet_schedule_table,
+    build_detention_schedule_table,
+    build_infrastructure_check_summary_table,
+)
+
+from civil_toolbox.reporting.infrastructure_sections import (
+    build_infrastructure_summary_section,
+    build_infrastructure_schedule_section,
+    build_pipe_schedule_section,
+    build_inlet_schedule_section,
+    build_detention_schedule_section,
+    build_infrastructure_check_summary_section,
+    build_infrastructure_warnings_section,
+    build_infrastructure_assumptions_section,
 )
 
 if TYPE_CHECKING:
@@ -322,4 +386,36 @@ __all__ = [
     # Assets
     "get_report_css",
     "get_disclaimer_text",
+    # Report Templates
+    "ReportTemplate",
+    "SectionTemplate",
+    "SUPPORTED_SECTION_TYPES",
+    "SUPPORTED_FORMATTING_PROFILES",
+    "ReportTemplateContext",
+    "ReportTemplateRegistry",
+    "TemplateNotFoundError",
+    "validate_template",
+    "validate_template_context",
+    "can_build_section",
+    "TemplateValidationError",
+    "ContextValidationError",
+    "build_report_from_template",
+    "TemplateBuildError",
+    "get_builtin_templates",
+    "get_default_template_registry",
+    # Infrastructure tables
+    "build_infrastructure_summary_table",
+    "build_pipe_schedule_table",
+    "build_inlet_schedule_table",
+    "build_detention_schedule_table",
+    "build_infrastructure_check_summary_table",
+    # Infrastructure sections
+    "build_infrastructure_summary_section",
+    "build_infrastructure_schedule_section",
+    "build_pipe_schedule_section",
+    "build_inlet_schedule_section",
+    "build_detention_schedule_section",
+    "build_infrastructure_check_summary_section",
+    "build_infrastructure_warnings_section",
+    "build_infrastructure_assumptions_section",
 ]
