@@ -39,5 +39,72 @@ Example:
     ... )
 """
 
-# Public API will be exposed after implementation
-__all__: list[str] = []
+from civil_toolbox.hydraulics.errors import (
+    HydraulicAnalysisError,
+    InvalidHydraulicInputError,
+    MissingHydraulicDataError,
+    UnsupportedHydraulicMethodError,
+)
+from civil_toolbox.hydraulics.models import (
+    HydraulicWarning,
+    PipeReachInput,
+    PipeReachHydraulicResult,
+    HydraulicProfileResult,
+)
+from civil_toolbox.hydraulics.hgl import (
+    GRAVITY_FTPS2,
+    velocity_fps,
+    velocity_head_ft,
+    friction_loss_ft,
+    friction_slope_from_manning,
+    pipe_crown_elevation_ft,
+    classify_surcharge_status,
+    freeboard_ft,
+)
+from civil_toolbox.hydraulics.compute import (
+    compute_pipe_reach_hydraulics,
+    compute_hgl_profile,
+)
+from civil_toolbox.hydraulics.builders import (
+    build_pipe_reach_from_infrastructure,
+    build_pipe_reaches_from_infrastructure,
+)
+from civil_toolbox.hydraulics.examples import (
+    create_simple_trunk_reaches,
+    create_surcharged_system_reaches,
+    create_mixed_geometry_reaches,
+    create_minimal_reach,
+)
+
+__all__ = [
+    # Errors
+    "HydraulicAnalysisError",
+    "InvalidHydraulicInputError",
+    "MissingHydraulicDataError",
+    "UnsupportedHydraulicMethodError",
+    # Models
+    "HydraulicWarning",
+    "PipeReachInput",
+    "PipeReachHydraulicResult",
+    "HydraulicProfileResult",
+    # HGL calculations
+    "GRAVITY_FTPS2",
+    "velocity_fps",
+    "velocity_head_ft",
+    "friction_loss_ft",
+    "friction_slope_from_manning",
+    "pipe_crown_elevation_ft",
+    "classify_surcharge_status",
+    "freeboard_ft",
+    # Compute functions
+    "compute_pipe_reach_hydraulics",
+    "compute_hgl_profile",
+    # Builders
+    "build_pipe_reach_from_infrastructure",
+    "build_pipe_reaches_from_infrastructure",
+    # Examples
+    "create_simple_trunk_reaches",
+    "create_surcharged_system_reaches",
+    "create_mixed_geometry_reaches",
+    "create_minimal_reach",
+]
