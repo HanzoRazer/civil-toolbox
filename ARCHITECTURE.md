@@ -618,6 +618,39 @@ See [Reporting Engine](docs/reporting.md), [Report Templates](docs/report-templa
 
 ---
 
+## Hydraulics Layer
+
+The hydraulics layer provides HGL/EGL calculations for pipe systems using steady-flow assumptions.
+
+```text
+PipeReachInput[] → compute_hgl_profile() → HydraulicProfileResult
+                                              ├── reach results
+                                              ├── surcharge status
+                                              └── warnings
+```
+
+### Current Implementation
+
+- **HGL propagation**: Downstream-to-upstream using friction losses
+- **Friction slope**: Manning's equation: Sf = [Q × n / (1.486 × A × R^(2/3))]²
+- **Velocity head**: V²/(2g) for EGL calculation
+- **Surcharge classification**: free_surface, surcharged_above_crown, surcharged_above_rim
+- **Freeboard**: Rim elevation minus HGL
+- **Infrastructure builders**: Convert domain InfrastructureElement to PipeReachInput
+- **Synthetic examples**: Pre-built reach systems for testing
+
+### Hydraulics Principles
+
+1. **Steady flow only** — No time-varying hydrographs
+2. **Full-flow assumption** — Pipes treated as pressurized
+3. **No local losses** — Friction losses only, no entrance/exit/bend losses
+4. **Ordered reaches** — User specifies downstream-to-upstream order
+5. **Explicit starting HGL** — No tailwater rating curves
+
+See [Hydraulic Grade Line](docs/hydraulic-grade-line.md) for details.
+
+---
+
 ## GIS Workflow Layer
 
 The GIS layer provides spatial feature models and GeoJSON support for map-based workflows.
