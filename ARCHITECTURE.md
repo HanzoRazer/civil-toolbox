@@ -551,6 +551,40 @@ See [Infrastructure Sizing](docs/infrastructure-sizing.md) for details.
 
 ---
 
+## Culvert Analysis Layer
+
+The culvert analysis layer extends barrel-capacity screening into a first-pass
+inlet/outlet control headwater analysis.
+
+```text
+Culvert + Design Flow
+        ↓
+Barrel Capacity (reused from sizing)  ┐
+Inlet Control (submerged orifice)     ├→ Governing Headwater → CulvertAnalysisResult
+Outlet Control (full-flow energy)     ┘
+```
+
+### Current Implementation
+
+- **Barrel capacity**: Reuses `estimate_culvert_barrel_capacity_cfs` (no reimplementation)
+- **Inlet control**: Submerged-orifice approximation, `HW = (Q/(Cd·A))² / 2g + D/2`
+- **Outlet control**: Full-flow energy, `HW = ho + (Ke + exit + friction)·V²/2g − ΔZ`
+- **Governing headwater**: The larger of inlet/outlet control (FHWA HDS-5 approach)
+- **Status**: Per-control classification vs. allowable headwater (passes/exceeds/not_evaluated/unknown)
+- **Standalone result**: `CulvertAnalysisResult` with warnings, assumptions, and string references
+
+### Culvert Analysis Principles
+
+1. **Screening-level only** — Not a substitute for FHWA HY-8 or HEC-RAS
+2. **Minimal-but-real** — Reference-backed equations with benchmark tests, no hollow scaffolds
+3. **Limitations are explicit** — No tailwater profiles, multi-barrel interaction, or road overtopping
+4. **Adapter-friendly** — Standalone result is shaped so a later adapter can emit a domain `CalculationResult`
+5. **Reuses, does not duplicate** — Barrel capacity comes from the sizing layer
+
+See [Culvert Analysis](docs/culvert-analysis.md) for details.
+
+---
+
 ## Reporting Layer
 
 The reporting layer generates engineering documents from domain objects.
