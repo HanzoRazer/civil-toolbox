@@ -585,6 +585,47 @@ See [Culvert Analysis](docs/culvert-analysis.md) for details.
 
 ---
 
+## Inlet Capacity Layer
+
+The inlet capacity layer estimates whether modeled inlets intercept a supplied
+design flow.
+
+```text
+Inlet + Design Flow + Head
+        ↓
+Dispatch by inlet_type → Capacity (orifice/weir)
+        ↓
+Captured Flow / Bypass Flow → InletCapacityResult
+```
+
+### Current Implementation
+
+- **Grate**: Submerged orifice on gross opening area, `Q = C·A·sqrt(2gH)`
+- **Curb opening**: Weir on opening length, `Q = Cw·L·H^(3/2)`
+- **Combination**: Grate + curb components summed
+- **Slotted**: Equivalent curb-opening weir
+- **Capture/bypass/efficiency**: `captured = min(capacity, design)`; bypass and efficiency derived
+- **Clogging**: Applied via the inlet's `effective_clogging_factor`
+- **Standalone result**: `InletCapacityResult` with status, warnings, assumptions, string references
+
+### Inlet Capacity Principles
+
+1. **Screening-level only** — Not the full FHWA HEC-22 procedure
+2. **Minimal-but-real** — Reference-backed equations with benchmark tests
+3. **Explicit design flow** — Runoff is not derived; `design_flow_cfs` is required
+4. **Reuses the domain `Inlet` model** — No second inlet asset class
+5. **Adapter-friendly** — Standalone result shaped for a future domain `CalculationResult`
+
+In the system chain:
+
+```text
+Runoff / Design Flow → Inlet Capacity → Captured Flow / Bypass Flow → Pipe Network
+```
+
+See [Inlet Capacity](docs/inlet-capacity.md) for details.
+
+---
+
 ## Reporting Layer
 
 The reporting layer generates engineering documents from domain objects.

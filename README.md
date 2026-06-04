@@ -70,6 +70,8 @@ This architecture allows engineers to preserve assumptions, compare alternatives
 | **Kirpich Formula** | Time of concentration for rural areas | Agricultural drainage |
 | **Kerby Equation** | Tc for overland sheet flow | Small watershed analysis |
 | **NRCS Lag Method** | Tc using watershed lag time | Urban/suburban watersheds |
+| **Culvert Analysis** | Inlet/outlet control headwater (first-pass) | Culvert headwater screening |
+| **Inlet Capacity** | Grate/curb/combination/slotted interception (first-pass) | Storm-drain inlet capture & bypass |
 
 ---
 
@@ -366,6 +368,9 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Design Criteria Libraries](docs/design-criteria-libraries.md) — Jurisdiction-specific design standards
 - [Infrastructure Modeling](docs/infrastructure-modeling.md) — Pipes, culverts, channels, detention facilities
 - [Infrastructure Sizing](docs/infrastructure-sizing.md) — Capacity checks using Manning's equation
+- [Hydraulic Grade Line](docs/hydraulic-grade-line.md) — HGL/EGL profiles for pipe reaches
+- [Culvert Analysis](docs/culvert-analysis.md) — Inlet/outlet control headwater (screening)
+- [Inlet Capacity](docs/inlet-capacity.md) — Inlet interception, capture and bypass flow
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
 - [Report Templates](docs/report-templates.md) — Reusable report templates
 - [Infrastructure Reporting](docs/infrastructure-reporting.md) — Infrastructure schedules and sizing reports
