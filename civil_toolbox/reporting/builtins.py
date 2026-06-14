@@ -345,6 +345,68 @@ def _create_infrastructure_summary_report_template() -> ReportTemplate:
     )
 
 
+def _create_hydraulic_profile_report_template() -> ReportTemplate:
+    """Create the hydraulic (HGL) profile report template.
+
+    Body carries the summary and reach results; the warnings, assumptions, and
+    references go to appendices (each rendered once — no duplication).
+    """
+    return ReportTemplate(
+        id="hydraulic_profile_report",
+        name="Hydraulic Profile Report",
+        version="1.0",
+        description=(
+            "Hydraulic grade line report with profile summary, reach-by-reach "
+            "results, and warnings/assumptions/references appendices."
+        ),
+        sections=[
+            SectionTemplate(
+                id="project_info",
+                title="Project Information",
+                section_type="project_summary",
+                required=False,
+                order=10,
+            ),
+            SectionTemplate(
+                id="hgl_profile_summary",
+                title="HGL Profile Summary",
+                section_type="hgl_profile_summary",
+                order=20,
+            ),
+            SectionTemplate(
+                id="hgl_reach_table",
+                title="HGL Reach Results",
+                section_type="hgl_reach_table",
+                order=30,
+            ),
+        ],
+        appendices=[
+            SectionTemplate(
+                id="hgl_warnings",
+                title="HGL Warnings",
+                section_type="hgl_warnings",
+                required=False,
+                order=10,
+            ),
+            SectionTemplate(
+                id="hgl_assumptions",
+                title="HGL Assumptions",
+                section_type="hgl_assumptions",
+                required=False,
+                order=20,
+            ),
+            SectionTemplate(
+                id="hgl_references",
+                title="References",
+                section_type="hgl_references",
+                required=False,
+                order=30,
+            ),
+        ],
+        formatting_profile="standard",
+    )
+
+
 def get_builtin_templates() -> list[ReportTemplate]:
     """Get all built-in report templates.
 
@@ -357,6 +419,7 @@ def get_builtin_templates() -> list[ReportTemplate]:
         _create_drainage_calculation_appendix_template(),
         _create_combined_drainage_report_template(),
         _create_infrastructure_summary_report_template(),
+        _create_hydraulic_profile_report_template(),
     ]
 
 

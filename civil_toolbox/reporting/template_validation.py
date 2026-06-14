@@ -40,6 +40,12 @@ SECTION_REQUIREMENTS: dict[str, str] = {
     "infrastructure_check_summary": "infrastructure_check_results",
     "infrastructure_warnings": "infrastructure_check_results",
     "infrastructure_assumptions": "infrastructure_check_results",
+    # Hydraulic (HGL) requirements
+    "hgl_profile_summary": "hydraulic_profile",
+    "hgl_reach_table": "hydraulic_profile",
+    "hgl_warnings": "hydraulic_profile",
+    "hgl_assumptions": "hydraulic_profile",
+    "hgl_references": "hydraulic_profile",
 }
 
 
@@ -181,6 +187,8 @@ def validate_template_context(
             has_data = context.has_infrastructure_network()
         elif requirement == "infrastructure_check_results":
             has_data = context.has_infrastructure_check_results()
+        elif requirement == "hydraulic_profile":
+            has_data = context.has_hydraulic_profile()
 
         if not has_data:
             if section.required:
@@ -230,5 +238,7 @@ def can_build_section(
         return context.has_infrastructure_network()
     elif requirement == "infrastructure_check_results":
         return context.has_infrastructure_check_results()
+    elif requirement == "hydraulic_profile":
+        return context.has_hydraulic_profile()
 
     return True

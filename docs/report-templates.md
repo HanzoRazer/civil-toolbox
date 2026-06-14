@@ -171,6 +171,14 @@ SectionTemplate(
 | `infrastructure_check_summary` | infrastructure_check_results | Sizing check results |
 | `infrastructure_warnings` | infrastructure_check_results | Sizing check warnings |
 | `infrastructure_assumptions` | infrastructure_check_results | Sizing check assumptions |
+| `hgl_profile_summary` | hydraulic_profile | HGL profile summary table |
+| `hgl_reach_table` | hydraulic_profile | Reach-by-reach HGL results |
+| `hgl_warnings` | hydraulic_profile | HGL warnings (profile + reach) |
+| `hgl_assumptions` | hydraulic_profile | Deduplicated HGL assumptions |
+| `hgl_references` | hydraulic_profile | HGL references (string list) |
+
+See [Hydraulic Reporting](hydraulic-reporting.md) for the HGL section/table builders
+and the `hydraulic_profile_report` built-in template.
 
 ## Built-In Templates
 

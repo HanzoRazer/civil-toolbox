@@ -51,6 +51,12 @@ SUPPORTED_SECTION_TYPES = frozenset({
     "infrastructure_check_summary",
     "infrastructure_warnings",
     "infrastructure_assumptions",
+    # Hydraulic (HGL) section types
+    "hgl_profile_summary",
+    "hgl_reach_table",
+    "hgl_warnings",
+    "hgl_assumptions",
+    "hgl_references",
 })
 
 SUPPORTED_FORMATTING_PROFILES = frozenset({

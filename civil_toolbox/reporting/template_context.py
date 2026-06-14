@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from civil_toolbox.comparison.storm_sensitivity import StormSensitivityResult
     from civil_toolbox.infrastructure import InfrastructureNetwork
     from civil_toolbox.infrastructure_sizing import InfrastructureCheckResult
+    from civil_toolbox.hydraulics.models import HydraulicProfileResult
 
 
 @dataclass
@@ -54,6 +55,8 @@ class ReportTemplateContext:
     storm_sensitivity: StormSensitivityResult | None = None
     infrastructure_network: InfrastructureNetwork | None = None
     infrastructure_check_results: list[InfrastructureCheckResult] = field(default_factory=list)
+    hydraulic_profile: HydraulicProfileResult | None = None
+    hydraulic_profiles: list[HydraulicProfileResult] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     custom_sections: dict[str, str] = field(default_factory=dict)
     assumptions: list[str] = field(default_factory=list)
@@ -83,6 +86,14 @@ class ReportTemplateContext:
     def has_infrastructure_check_results(self) -> bool:
         """Check if infrastructure check results are available."""
         return len(self.infrastructure_check_results) > 0
+
+    def has_hydraulic_profile(self) -> bool:
+        """Check if a single hydraulic profile is available."""
+        return self.hydraulic_profile is not None
+
+    def has_hydraulic_profiles(self) -> bool:
+        """Check if multiple hydraulic profiles are available."""
+        return len(self.hydraulic_profiles) > 0
 
     def get_custom_section(self, section_id: str) -> str | None:
         """Get custom section text by ID.

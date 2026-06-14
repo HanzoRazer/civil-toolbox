@@ -184,6 +184,21 @@ from civil_toolbox.reporting.infrastructure_sections import (
     build_infrastructure_assumptions_section,
 )
 
+from civil_toolbox.reporting.hydraulic_tables import (
+    build_hgl_profile_summary_table,
+    build_hgl_reach_table,
+    build_hgl_warning_table,
+    build_hgl_assumption_table,
+)
+
+from civil_toolbox.reporting.hydraulic_sections import (
+    build_hgl_profile_summary_section,
+    build_hgl_reach_table_section,
+    build_hgl_warnings_section,
+    build_hgl_assumptions_section,
+    build_hgl_references_section,
+)
+
 if TYPE_CHECKING:
     from civil_toolbox.domain.project import Project
     from civil_toolbox.domain.scenario import Scenario
@@ -418,4 +433,15 @@ __all__ = [
     "build_infrastructure_check_summary_section",
     "build_infrastructure_warnings_section",
     "build_infrastructure_assumptions_section",
+    # Hydraulic (HGL) tables
+    "build_hgl_profile_summary_table",
+    "build_hgl_reach_table",
+    "build_hgl_warning_table",
+    "build_hgl_assumption_table",
+    # Hydraulic (HGL) sections
+    "build_hgl_profile_summary_section",
+    "build_hgl_reach_table_section",
+    "build_hgl_warnings_section",
+    "build_hgl_assumptions_section",
+    "build_hgl_references_section",
 ]

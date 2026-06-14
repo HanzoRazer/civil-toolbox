@@ -373,6 +373,7 @@ Civil Toolbox is governed by engineering reliability and transparent computation
 - [Inlet Capacity](docs/inlet-capacity.md) — Inlet interception, capture and bypass flow
 - [Reporting Engine](docs/reporting.md) — Generate engineering reports
 - [Report Templates](docs/report-templates.md) — Reusable report templates
+- [Hydraulic Reporting](docs/hydraulic-reporting.md) — HGL profile tables and report sections
 - [Infrastructure Reporting](docs/infrastructure-reporting.md) — Infrastructure schedules and sizing reports
 - [GIS Workflows](docs/gis-workflows.md) — Spatial features and GeoJSON import/export
 - [PDF Export](docs/pdf-report-export.md) — Export reports to PDF
