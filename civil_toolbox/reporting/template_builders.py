@@ -53,6 +53,13 @@ from civil_toolbox.reporting.infrastructure_sections import (
     build_infrastructure_warnings_section,
     build_infrastructure_assumptions_section,
 )
+from civil_toolbox.reporting.hydraulic_sections import (
+    build_hgl_profile_summary_section,
+    build_hgl_reach_table_section,
+    build_hgl_warnings_section,
+    build_hgl_assumptions_section,
+    build_hgl_references_section,
+)
 
 if TYPE_CHECKING:
     pass
@@ -407,6 +414,66 @@ def _build_infrastructure_assumptions_section_wrapper(
     )
 
 
+def _build_hgl_profile_summary_section_wrapper(
+    section: SectionTemplate,
+    context: ReportTemplateContext,
+) -> list[ReportSection]:
+    """Build HGL profile summary sections."""
+    if not context.hydraulic_profile:
+        return []
+    return build_hgl_profile_summary_section(
+        context.hydraulic_profile, title=section.title
+    )
+
+
+def _build_hgl_reach_table_section_wrapper(
+    section: SectionTemplate,
+    context: ReportTemplateContext,
+) -> list[ReportSection]:
+    """Build HGL reach table sections."""
+    if not context.hydraulic_profile:
+        return []
+    return build_hgl_reach_table_section(
+        context.hydraulic_profile, title=section.title
+    )
+
+
+def _build_hgl_warnings_section_wrapper(
+    section: SectionTemplate,
+    context: ReportTemplateContext,
+) -> list[ReportSection]:
+    """Build HGL warnings sections."""
+    if not context.hydraulic_profile:
+        return []
+    return build_hgl_warnings_section(
+        context.hydraulic_profile, title=section.title
+    )
+
+
+def _build_hgl_assumptions_section_wrapper(
+    section: SectionTemplate,
+    context: ReportTemplateContext,
+) -> list[ReportSection]:
+    """Build HGL assumptions sections."""
+    if not context.hydraulic_profile:
+        return []
+    return build_hgl_assumptions_section(
+        context.hydraulic_profile, title=section.title
+    )
+
+
+def _build_hgl_references_section_wrapper(
+    section: SectionTemplate,
+    context: ReportTemplateContext,
+) -> list[ReportSection]:
+    """Build HGL references sections."""
+    if not context.hydraulic_profile:
+        return []
+    return build_hgl_references_section(
+        context.hydraulic_profile, title=section.title
+    )
+
+
 def _build_storm_sensitivity_table_section(
     section: SectionTemplate,
     context: ReportTemplateContext,
@@ -530,6 +597,12 @@ SECTION_BUILDERS: dict[
     "infrastructure_check_summary": _build_infrastructure_check_summary_section_wrapper,
     "infrastructure_warnings": _build_infrastructure_warnings_section_wrapper,
     "infrastructure_assumptions": _build_infrastructure_assumptions_section_wrapper,
+    # Hydraulic (HGL) section builders
+    "hgl_profile_summary": _build_hgl_profile_summary_section_wrapper,
+    "hgl_reach_table": _build_hgl_reach_table_section_wrapper,
+    "hgl_warnings": _build_hgl_warnings_section_wrapper,
+    "hgl_assumptions": _build_hgl_assumptions_section_wrapper,
+    "hgl_references": _build_hgl_references_section_wrapper,
 }
 
 
