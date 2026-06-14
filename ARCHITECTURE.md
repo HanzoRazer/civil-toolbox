@@ -642,6 +642,21 @@ Domain Objects + Comparison Results → Report Builder → Markdown/PDF
 - **Deterministic**: Same input produces identical output
 - **Testable**: Tables render to plain strings
 
+### Hydraulic (HGL) Reporting
+
+Integrates the hydraulics foundation into reporting (formats only — no calculations):
+
+```text
+HydraulicProfileResult → Hydraulic Report Sections → Markdown/PDF Reports
+```
+
+- HGL table/section builders (`hydraulic_tables.py`, `hydraulic_sections.py`)
+- Template section types: `hgl_profile_summary`, `hgl_reach_table`, `hgl_warnings`, `hgl_assumptions`, `hgl_references`
+- Built-in `hydraulic_profile_report` template (summary/reach in body; warnings/assumptions/references in appendices)
+- HGL references render as plain `list[str]`; warnings aggregate profile + reach
+
+See [Hydraulic Reporting](docs/hydraulic-reporting.md) for details.
+
 ### Report Templates
 
 Templates define report structure, section ordering, and formatting intent:
