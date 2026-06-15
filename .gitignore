@@ -27,3 +27,9 @@ htmlcov/
 .tox/
 .mypy_cache/
 .ruff_cache/
+
+# App layer (opt-in): local SQLite databases are never committed.
+*.db
+*.sqlite
+*.sqlite3
+.civil-toolbox/

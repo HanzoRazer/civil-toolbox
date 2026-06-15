@@ -96,6 +96,19 @@ To enable PDF report export:
 pip install -e ".[pdf]"
 ```
 
+### Optional: App Layer (Phase A)
+
+Civil Toolbox includes an **opt-in** application layer (`civil_toolbox/app/`) for
+project setup, defaults, audit, and revisions. It is not loaded unless explicitly
+imported, and the kernel installs without its dependencies:
+
+```bash
+pip install -e ".[app]"
+```
+
+The kernel remains headless; nothing in `civil_toolbox/` outside `app/` imports
+the app layer (enforced by a boundary test). See [App Layer](docs/app-layer.md).
+
 ### Quick Start
 
 ```python
