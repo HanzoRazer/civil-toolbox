@@ -1,9 +1,13 @@
 name: tests
 
 # Runs the pytest suite on every push and PR to main.
-# This is the first CI for civil-toolbox: it turns the auditability
-# conventions in ENGINEERING_STANDARDS.md into an enforced gate, starting
-# with the CalculationResult audit-trail completeness contract.
+#
+# Two tracks enforce the kernel/app boundary (SPEC v0.2.1 D8, locked decision #12):
+#   - test-kernel: installs ONLY .[dev]. App deps (FastAPI, SQLAlchemy, ...) are
+#     absent, so the kernel must import and pass headless. App tests skip cleanly
+#     (importorskip), and the boundary test (static file walk) still runs. A green
+#     test-kernel actively proves the kernel does not require the app layer.
+#   - test-app: installs .[app,dev]; the app-layer tests actually execute here.
 
 on:
   push:
@@ -12,32 +16,45 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-kernel:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Real supported floor is 3.10: the package uses PEP 604 unions
-      # (X | None) in runtime-evaluated signatures without
-      # `from __future__ import annotations`, which raise TypeError on 3.8/3.9
-      # (e.g. civil_toolbox/rainfall/validation.py). requires-python is >=3.10
-      # to match. Bump the ceiling here as newer interpreters are verified.
+      # Real supported floor is 3.10 (PEP 604 unions in runtime-evaluated
+      # signatures). Bump the ceiling as newer interpreters are verified.
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install package with dev extras
-        # No runtime deps (dependencies = []); dev extra brings pytest + pytest-cov.
+      - name: Install kernel with dev extras only
+        # No app deps: proves the kernel is dependency-light and headless.
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+      - name: Run test suite (app tests skip without app deps)
+        run: pytest
 
-      - name: Run test suite
+  test-app:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install kernel with app and dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[app,dev]"
+      - name: Run test suite (app-layer tests execute here)
         run: pytest
