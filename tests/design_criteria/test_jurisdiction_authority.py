@@ -8,6 +8,8 @@ from civil_toolbox.design_criteria.jurisdiction_authority import (
 from civil_toolbox.design_criteria.jurisdictions import (
     GenericAuthority,
     HCFCDAuthority,
+    available_jurisdiction_ids,
+    get_authority,
 )
 
 
@@ -36,3 +38,15 @@ class TestPlaceholderTypes:
     def test_validation_rule_and_report_section(self):
         assert ValidationRule("r1").rule_id == "r1"
         assert ReportSection("s1", title="T").section_id == "s1"
+
+
+class TestAuthorityLookup:
+    def test_get_authority_known(self):
+        assert get_authority("hcfcd").jurisdiction_id == "hcfcd"
+        assert get_authority("generic").jurisdiction_id == "generic"
+
+    def test_get_authority_unknown(self):
+        assert get_authority("nope") is None
+
+    def test_available_ids(self):
+        assert available_jurisdiction_ids() == ("generic", "hcfcd")

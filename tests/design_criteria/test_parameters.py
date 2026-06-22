@@ -7,6 +7,8 @@ from civil_toolbox.design_criteria.parameters import (
     PHASE_A_PARAMETERS,
     ParameterContext,
     ParameterSchema,
+    get_parameter_schema,
+    parameters_required_by,
 )
 
 
@@ -24,8 +26,49 @@ class TestParameterSchema:
 class TestParameterContext:
     def test_defaults_none(self):
         ctx = ParameterContext()
+        assert ctx.project_type is None
         assert ctx.petition_type is None
         assert ctx.drainage_area_ac is None
+        assert ctx.metadata == {}
+
+    def test_new_fields_settable(self):
+        ctx = ParameterContext(project_type="detention", metadata={"k": 1})
+        assert ctx.project_type == "detention"
+        assert ctx.metadata == {"k": 1}
+
+
+class TestEnrichedSchema:
+    def test_presentation_fields_present(self):
+        s = get_parameter_schema("project_latitude_deg")
+        assert s is not None
+        assert s.name == "Latitude"
+        assert s.help_text
+        assert s.valid_range == (-90.0, 90.0)
+
+    def test_value_type_and_required_retained(self):
+        s = get_parameter_schema("project_name")
+        assert s.value_type == "str"
+        assert s.required is True
+
+
+class TestLookupFunctions:
+    def test_get_parameter_schema_known(self):
+        assert get_parameter_schema("project_freeboard_ft").parameter_id == "project_freeboard_ft"
+
+    def test_get_parameter_schema_unknown(self):
+        assert get_parameter_schema("project_not_a_real_param") is None
+
+    def test_parameters_required_by_hcfcd(self):
+        req = parameters_required_by("hcfcd")
+        assert "project_freeboard_ft" in req
+
+    def test_parameters_required_by_generic(self):
+        req = parameters_required_by("generic")
+        assert "project_name" in req
+        assert "project_freeboard_ft" not in req
+
+    def test_parameters_required_by_unknown(self):
+        assert parameters_required_by("nope") == ()
 
 
 class TestPhaseAParameters:
