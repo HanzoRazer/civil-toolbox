@@ -20,8 +20,11 @@ import pytest
 
 from civil_toolbox.design_criteria.parameter_registry import (
     is_valid_parameter_id,
+    load_registered_parameter_ids,
     load_registry,
     registered_parameter_ids,
+    require_registered_parameter_id,
+    validate_parameter_id,
 )
 
 EXPECTED_PHASE_A_IDS = {
@@ -57,6 +60,21 @@ class TestRegistryFile:
     def test_header_not_captured(self):
         # The backticked table header cell must not leak in as an entry.
         assert "parameter_id" not in {e.parameter_id for e in load_registry()}
+
+
+class TestRegistryHelpers:
+    def test_require_registered_ok(self):
+        assert require_registered_parameter_id("project_name") == "project_name"
+
+    def test_require_registered_raises_for_unregistered(self):
+        with pytest.raises(ValueError, match="Unregistered parameter_id"):
+            require_registered_parameter_id("project_not_registered_xyz")
+
+    def test_aliases_match_canonical_names(self):
+        # Handoff-compatible aliases must not diverge from the canonical functions.
+        assert load_registered_parameter_ids() == registered_parameter_ids()
+        assert validate_parameter_id is not None
+        assert validate_parameter_id("project_name") is True
 
 
 class TestCodeRegistrySynchrony:

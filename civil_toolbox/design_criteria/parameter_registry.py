@@ -121,3 +121,24 @@ def registered_parameter_ids(path: Path | None = None) -> frozenset[str]:
     return frozenset(
         entry.parameter_id for entry in load_registry(path) if not entry.deprecated
     )
+
+
+def require_registered_parameter_id(
+    parameter_id: str, path: Path | None = None
+) -> str:
+    """Return the ID if registered; raise ValueError otherwise.
+
+    Use on write paths (defaults, overrides) to reject unregistered IDs before
+    they reach persistence (PARAMETER_NAMESPACE.md §5).
+    """
+    if parameter_id not in registered_parameter_ids(path):
+        raise ValueError(
+            f"Unregistered parameter_id: {parameter_id!r}. "
+            "Add it to docs/PARAMETER_NAMESPACE.md before use."
+        )
+    return parameter_id
+
+
+# --- Handoff-compatible name aliases (do not break the current names) ---
+load_registered_parameter_ids = registered_parameter_ids
+validate_parameter_id = is_valid_parameter_id
