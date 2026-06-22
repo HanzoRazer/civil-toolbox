@@ -106,6 +106,31 @@ Project
 
 ## Separation of Concerns
 
+### Five-Layer Spine
+
+Civil Toolbox is organized around five layers, each owning one concern. When a
+design decision is ambiguous, the test is: *which layer owns this?*
+
+```text
+Kernel owns engineering truth.
+Application owns workflow.
+Persistence owns storage.
+Reporting owns presentation.
+Export owns packaging.
+```
+
+The optional app layer (`civil_toolbox/app/`, Phase A+) is the **Application**
+layer. It depends on the kernel; the kernel never depends on it:
+
+```text
+App may import kernel.
+Kernel may not import app.
+```
+
+This boundary is enforced by `tests/app/test_kernel_app_boundary.py` (a static
+AST walk) and proven in CI: the `test-kernel` job installs only `.[dev]`, so the
+kernel must pass headless without the app's optional dependencies.
+
 ### Calculation Engine
 
 The calculation engine must remain independent of:
